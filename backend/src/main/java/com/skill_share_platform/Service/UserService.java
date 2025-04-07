@@ -16,9 +16,12 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    // Method to create a user
     public String createUser(UserDataTransferObject userDataTransferObject) {
         try {
+            // Creating an object of User class
             User user = new User();
+            // Assigning the values of Data trasnfer object class to the user object
             user.setUserId(userDataTransferObject.getUserId());
             user.setUserName(userDataTransferObject.getUserName());
             user.setUserEmail(userDataTransferObject.getUserEmail());
@@ -36,7 +39,7 @@ public class UserService {
             user.setEnabled(userDataTransferObject.isEnabled());
             user.setCreatedAt(userDataTransferObject.getCreatedAt());
             user.setUpdatedAt(userDataTransferObject.getUpdatedAt());
-
+            // Saving the user object to the database
             userRepository.save(user);
             return "User ID : " + userDataTransferObject.getUserId() + " created successfully";
         } catch (Exception e) {
@@ -44,9 +47,12 @@ public class UserService {
         }
     }
 
+    // Method to get all the users
     public List<User> getUsers() {
+        // Creating an empty list of users
         List<User> usersList = new ArrayList<>();
         try {
+            // assigning the users from the database to the list
             usersList = userRepository.findAll();
         } catch (Exception e) {
             System.out.println("Error fetching users: " + e.getMessage());
@@ -54,8 +60,10 @@ public class UserService {
         return usersList;
     }
 
+    // method to delete a user with the ID
     public String deleteUserById(String userId) {
         try {
+            // Checks if the given user ID exists in database
             if (userRepository.existsById(userId)) {
                 userRepository.deleteById(userId);
                 return "User ID : " + userId + " deleted successfully";
@@ -66,4 +74,53 @@ public class UserService {
             return "Error deleting user: " + e.getMessage();
         }
     }
+
+    // Method to get a user with ID
+    public User getUserById(String userId) {
+        // Checking if the given user ID exists in database
+        if (userRepository.existsById(userId)) {
+            // If user ID exists returns the user object
+            return userRepository.findById(userId).get();
+        } else {
+            // If user ID does not exist returns null
+            return null;
+        }
+    }
+
+    // Method to update a user with ID
+    public String updateUser(UserDataTransferObject userDataTransferObject) {
+        try {
+            if (userRepository.existsById(userDataTransferObject.getUserId())) {
+                // Getting the existing user details
+                User existingUser = userRepository.findById(userDataTransferObject.getUserId()).get();
+                // Assigning the values of Data transfer object class to the user object
+                existingUser.setUserId(userDataTransferObject.getUserId());
+                existingUser.setUserName(userDataTransferObject.getUserName());
+                existingUser.setUserEmail(userDataTransferObject.getUserEmail());
+                existingUser.setUserPassword(userDataTransferObject.getUserPassword());
+                existingUser.setFullName(userDataTransferObject.getFullName());
+                existingUser.setBio(userDataTransferObject.getBio());
+                existingUser.setProfilePictureUrl(userDataTransferObject.getProfilePictureUrl());
+                existingUser.setLocation(userDataTransferObject.getLocation());
+                existingUser.setCurrentSkills(userDataTransferObject.getCurrentSkills());
+                existingUser.setSocialLinks(userDataTransferObject.getSocialLinks());
+                existingUser.setFollowers(userDataTransferObject.getFollowers());
+                existingUser.setFollowing(userDataTransferObject.getFollowing());
+                existingUser.setBadges(userDataTransferObject.getBadges());
+                existingUser.setRoles(userDataTransferObject.getRoles());
+                existingUser.setEnabled(userDataTransferObject.isEnabled());
+                existingUser.setCreatedAt(userDataTransferObject.getCreatedAt());
+                existingUser.setUpdatedAt(userDataTransferObject.getUpdatedAt());
+                // Saving the updated user object to the database
+                userRepository.save(existingUser);
+                return "User ID : " + userDataTransferObject.getUserId() + " updated successfully";
+
+            } else {
+                return "User ID : " + userDataTransferObject.getUserId() + " not found";
+            }
+        } catch (Exception e) {
+            return "Error updating user: " + e.getMessage();
+        }
+    }
+
 }

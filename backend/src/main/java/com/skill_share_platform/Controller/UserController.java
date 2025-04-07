@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,21 +25,38 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    // Endpoint to create a user
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public String createuser(@RequestBody UserDataTransferObject userDataTransferObject) {
         return userService.createUser(userDataTransferObject);
     }
 
+    // Endponit to get all users
     @GetMapping("/get")
     @ResponseStatus(HttpStatus.OK)
     public List<User> getUsers() {
         return userService.getUsers();
     }
 
+    // Endpoint to delete a user by Id
     @DeleteMapping("/delete/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public String deleteUserById(@PathVariable String userId) {
         return userService.deleteUserById(userId);
+    }
+
+    // Endpoint to get a user by Id
+    @GetMapping("/get/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public User getUserById(@PathVariable String userId) {
+        return userService.getUserById(userId);
+    }
+
+    // Endpoint to update a user
+    @PutMapping("/update")
+    @ResponseStatus(HttpStatus.OK)
+    public String updateUser(@RequestBody UserDataTransferObject userDataTransferObject) {
+        return userService.updateUser(userDataTransferObject);
     }
 }
