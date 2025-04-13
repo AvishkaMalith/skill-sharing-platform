@@ -17,7 +17,7 @@ public class CommentService {
   private CommentRepository commentRepository;
 
   // Method to create a comment
-  public String createComment(CommentDataTransferObject commentDataTransferObject){
+  public String createComment(CommentDataTransferObject commentDataTransferObject) {
     try {
       // Creating an object of comment class
       CommentModel comment = new CommentModel();
@@ -48,5 +48,50 @@ public class CommentService {
     return comments;
   }
 
-  // Need to implement "Method to get all the comments of a post with postID" 
+  // Method to get a specific comment by commentId
+  public CommentModel getcommentById(String commentId) {
+    // Checking if the given postId exists in the database
+    if (commentRepository.existsById(commentId)) {
+      // If comment Id exists, return the comment object
+      return commentRepository.findById(commentId).get();
+    } else {
+      // If comment Id does not exist, return null
+      return null;
+    }
+  }
+
+  // Method to update a comment by commentId
+  public String updateCommentById(String commentId, CommentDataTransferObject commentDataTransferObject) {
+    try {
+      if (commentRepository.existsById(commentId)) {
+        // Getting the existing comment details
+        CommentModel existingComment = commentRepository.findById(commentId).get();
+        // Assigning the content and updatedAt of Data transfer object class to the comment object
+        existingComment.setContent(commentDataTransferObject.getContent());
+        existingComment.setUpdatedAt(commentDataTransferObject.getUpdatedAt());
+        // Saving the updated comment to the database
+        commentRepository.save(existingComment);
+        return "Comment ID : " + commentId + " updated successfully";
+      } else {
+        return "Comment ID : " + commentId + " not found";
+      }
+    } catch (Exception e) {
+      return "Error updating comment : " + e.getMessage();
+    }
+  }
+
+  // Method to delete a comment by commentId
+  public String deleteCommentById(String commentId) {
+    try {
+      // Checking if the comment Id exists in the database
+      if(commentRepository.existsById(commentId)) {
+        commentRepository.deleteById(commentId);
+        return "Comment ID : " + commentId + " deleted successfully";
+      } else {
+        return "Comment ID : " + commentId + " not found";
+      }
+    } catch (Exception e) {
+      return "Error deleting comment : " + e.getMessage();
+    }
+  }
 }

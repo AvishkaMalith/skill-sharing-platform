@@ -112,7 +112,6 @@ public class UserService {
                 // Saving the updated user object to the database
                 userRepository.save(existingUser);
                 return "User ID : " + userDataTransferObject.getUserId() + " updated successfully";
-
             } else {
                 return "User ID : " + userDataTransferObject.getUserId() + " not found";
             }

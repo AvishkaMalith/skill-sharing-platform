@@ -1,1 +1,13 @@
-C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\backend\BackendApplication.java
+C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\BackendApplication.java
+C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\Config\CORS.java
+C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\Config\SecurityConfig.java
+C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\Controller\CommentController.java
+C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\Controller\UserController.java
+C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\DataTransferObject\CommentDataTransferObject.java
+C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\DataTransferObject\UserDataTransferObject.java
+C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\Model\CommentModel.java
+C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\Model\UserModel.java
+C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\Repository\CommentRepository.java
+C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\Repository\UserRepository.java
+C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\Service\CommentService.java
+C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\Service\UserService.java
