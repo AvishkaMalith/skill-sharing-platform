@@ -7,7 +7,7 @@ import java.util.Date;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(value = "users")
-public class User {
+public class UserModel {
 
     // Basic user attributes
     private String userName;
@@ -31,11 +31,11 @@ public class User {
     private Date updatedAt;
 
     // Default constructor
-    public User() {
+    public UserModel() {
     }
 
     // Parameterized constructor
-    public User(String userName, String userEmail, String userPassword, String fullName, String bio,
+    public UserModel(String userName, String userEmail, String userPassword, String fullName, String bio,
             String profilePictureUrl, String location, List<String> currentSkills, Map<String, String> socialLinks,
             List<String> followers, List<String> following, Map<String, String> badges, List<String> roles,
             boolean enabled, Date createdAt, Date updatedAt) {
