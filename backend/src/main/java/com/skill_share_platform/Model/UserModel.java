@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Date;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(value = "users")
 public class UserModel {
-
+    @Id
+    private String userId;
     // Basic user attributes
     private String userName;
     private String userEmail;
@@ -35,10 +37,11 @@ public class UserModel {
     }
 
     // Parameterized constructor
-    public UserModel(String userName, String userEmail, String userPassword, String fullName, String bio,
+    public UserModel(String userId, String userName, String userEmail, String userPassword, String fullName, String bio,
             String profilePictureUrl, String location, List<String> currentSkills, Map<String, String> socialLinks,
             List<String> followers, List<String> following, Map<String, String> badges, List<String> roles,
             boolean enabled, Date createdAt, Date updatedAt) {
+        this.userId = userId;
         this.userName = userName;
         this.userEmail = userEmail;
         this.userPassword = userPassword;
@@ -58,6 +61,10 @@ public class UserModel {
     }
 
     // Setters for attributes
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     public void setUserName(String userName) {
         this.userName = userName;
     }
@@ -123,6 +130,10 @@ public class UserModel {
     }
 
     // Getters for attributes
+    public String getUserId() {
+        return userId;
+    }
+    
     public String getUserName() {
         return userName;
     }
