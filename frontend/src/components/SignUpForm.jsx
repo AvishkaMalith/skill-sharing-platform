@@ -4,7 +4,7 @@ import axios from "axios";
 import { X } from "lucide-react";
 import {
   FaGoogle,
-  FaFacebookSquare
+  FaFacebook
 } from "react-icons/fa";
 
 const SignUpForm = ({ isOpen, onClose }) => {
@@ -84,7 +84,7 @@ const SignUpForm = ({ isOpen, onClose }) => {
               Sign up with Google
             </button>
             <button className="w-full py-2 bg-white border border-blue-400 rounded-md flex items-center justify-center gap-2 hover:bg-gray-200">
-              <FaFacebookSquare className="text-blue-800" size={22} />
+              <FaFacebook className="text-blue-800" size={22} />
               Sign up with FaceBook
             </button>
           </div>
