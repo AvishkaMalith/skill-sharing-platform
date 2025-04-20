@@ -7,3 +7,5 @@
 
 # Ignore VS Code settings
 .vscode/
+
+.idea/
