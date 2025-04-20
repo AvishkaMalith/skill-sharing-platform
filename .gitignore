@@ -1,2 +1,9 @@
 .env
 ./frontend/node_modules
+
+
+# Ignore the target directory (where .class files are generated in a Spring Boot project)
+/target/
+
+# Ignore VS Code settings
+.vscode/
