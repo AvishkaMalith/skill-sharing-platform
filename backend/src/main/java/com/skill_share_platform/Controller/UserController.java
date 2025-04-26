@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.skill_share_platform.DataTransferObject.UserDataTransferObject;
 import com.skill_share_platform.Service.UserService;
-import com.skill_share_platform.Model.User;
+import com.skill_share_platform.Model.UserModel;
 
 @RestController
 @RequestMapping("api/users")
@@ -35,7 +35,7 @@ public class UserController {
     // Endponit to get all users
     @GetMapping("/get")
     @ResponseStatus(HttpStatus.OK)
-    public List<User> getUsers() {
+    public List<UserModel> getUsers() {
         return userService.getUsers();
     }
 
@@ -49,7 +49,7 @@ public class UserController {
     // Endpoint to get a user by Id
     @GetMapping("/get/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public User getUserById(@PathVariable String userId) {
+    public UserModel getUserById(@PathVariable String userId) {
         return userService.getUserById(userId);
     }
 
@@ -59,4 +59,15 @@ public class UserController {
     public String updateUser(@RequestBody UserDataTransferObject userDataTransferObject) {
         return userService.updateUser(userDataTransferObject);
     }
+
+    // Endpoint to get a user by email
+    @GetMapping("/email/{email}")
+    public UserModel getUserByEmail(@PathVariable String email) {
+        UserModel user = userService.getUserByEmail(email);
+        if (user == null) {
+            return null;
+        }
+        return user;
+    }
+
 }

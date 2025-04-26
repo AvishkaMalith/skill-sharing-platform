@@ -1,14 +1,14 @@
 package com.skill_share_platform.Service;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.skill_share_platform.Repository.UserRepository;
 import com.skill_share_platform.DataTransferObject.UserDataTransferObject;
-import com.skill_share_platform.Model.User;
+import com.skill_share_platform.Model.UserModel;
+import com.skill_share_platform.Repository.UserRepository;
 
 @Service
 public class UserService {
@@ -20,9 +20,8 @@ public class UserService {
     public String createUser(UserDataTransferObject userDataTransferObject) {
         try {
             // Creating an object of User class
-            User user = new User();
+            UserModel user = new UserModel();
             // Assigning the values of Data trasnfer object class to the user object
-            user.setUserId(userDataTransferObject.getUserId());
             user.setUserName(userDataTransferObject.getUserName());
             user.setUserEmail(userDataTransferObject.getUserEmail());
             user.setUserPassword(userDataTransferObject.getUserPassword());
@@ -48,9 +47,9 @@ public class UserService {
     }
 
     // Method to get all the users
-    public List<User> getUsers() {
+    public List<UserModel> getUsers() {
         // Creating an empty list of users
-        List<User> usersList = new ArrayList<>();
+        List<UserModel> usersList = new ArrayList<>();
         try {
             // assigning the users from the database to the list
             usersList = userRepository.findAll();
@@ -76,7 +75,7 @@ public class UserService {
     }
 
     // Method to get a user with ID
-    public User getUserById(String userId) {
+    public UserModel getUserById(String userId) {
         // Checking if the given user ID exists in database
         if (userRepository.existsById(userId)) {
             // If user ID exists returns the user object
@@ -92,9 +91,8 @@ public class UserService {
         try {
             if (userRepository.existsById(userDataTransferObject.getUserId())) {
                 // Getting the existing user details
-                User existingUser = userRepository.findById(userDataTransferObject.getUserId()).get();
+                UserModel existingUser = userRepository.findById(userDataTransferObject.getUserId()).get();
                 // Assigning the values of Data transfer object class to the user object
-                existingUser.setUserId(userDataTransferObject.getUserId());
                 existingUser.setUserName(userDataTransferObject.getUserName());
                 existingUser.setUserEmail(userDataTransferObject.getUserEmail());
                 existingUser.setUserPassword(userDataTransferObject.getUserPassword());
@@ -120,6 +118,16 @@ public class UserService {
             }
         } catch (Exception e) {
             return "Error updating user: " + e.getMessage();
+        }
+    }
+
+    // Method to get the user by attribute
+    public UserModel getUserByEmail(String email) {
+        try {
+            return userRepository.findByUserEmail(email);
+        } catch (Exception e) {
+            System.out.println("Error fetching user by email: " + e.getMessage());
+            return null;
         }
     }
 
