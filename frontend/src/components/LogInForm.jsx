@@ -7,7 +7,7 @@ import {
   FaFacebook
 } from "react-icons/fa";
 
-const SignUpForm = ({ isOpen, onClose }) => {
+const LogInForm = ({ isOpen, onClose }) => {
 
   const [signUpFormData, setSignUpFormData] = useState({
     userName: "",
@@ -88,16 +88,8 @@ const SignUpForm = ({ isOpen, onClose }) => {
               Sign up with FaceBook
             </button>
           </div>
-          <div className="my-6 text-center text-sm text-gray-500">or sign up with email</div>
+          <div className="my-6 text-center text-md text-gray-500">or sign up with email</div>
           <form onSubmit={handleSignUpWithEmail} className="space-y-4">
-            <input
-              type="text"
-              className="w-full border border-blue-400 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Full Name"
-              onChange={handleFormChange}
-              name="fullName"
-              required
-            />
             <input
               className="w-full border border-blue-400 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               type="email"
@@ -123,7 +115,7 @@ const SignUpForm = ({ isOpen, onClose }) => {
               <label>I agree to the <a href="#" className="text-blue-600 underline">terms</a></label>
             </div>
             <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-              Create Account or Log In
+              Log In
             </button>
           </form>
         </div>
@@ -132,4 +124,4 @@ const SignUpForm = ({ isOpen, onClose }) => {
   );
 };
 
-export default SignUpForm;
+export default LogInForm;
