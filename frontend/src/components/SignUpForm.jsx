@@ -7,8 +7,22 @@ import { FaGoogle, FaFacebook } from "react-icons/fa";
 const LogInForm = ({ isOpen, onClose }) => {
 
   const [signUpFormData, setSignUpFormData] = useState({
+    userName: "",
     userEmail: "",
-    userPassword: ""
+    userPassword: "",
+    fullName: "",
+    bio: "",
+    profilePictureUrl: "",
+    location: "",
+    currentSkills: [],
+    socialLinks: {},
+    followers: [],
+    following: [],
+    badges: {},
+    roles: [],
+    enabled: true,
+    createdAt: new Date(),
+    updatedAt: ""
   });
 
   const handleFormChange = (e) => {
@@ -18,14 +32,36 @@ const LogInForm = ({ isOpen, onClose }) => {
     });
   };
 
+  useEffect(() => {
+    // Need to code the function "Check if the userEmail is already taken"
+    setSignUpFormData((prevData) => ({
+      ...prevData,
+      userName : signUpFormData.userEmail.split("@")[0].toLowerCase(),
+    }));
+  }, [signUpFormData.userEmail]);
+
   const handleSignUpWithEmail = async (e) => {
     // Prevent from refreshing
     e.preventDefault();
-
-  };
-
-  const handleSignUpWithGoogle = () => {
-    window.location.href = "http://localhost:8080/login/oauth2/code/google";
+    try {
+      // Sending the POST request
+      const response = await axios.post("http://localhost:8080/api/users/create", signUpFormData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      // Resetting the form data to its default values
+      setSignUpFormData({
+        fullName: "",
+        userName: "",
+        userEmail: "",
+        userPassword: ""
+      });
+      // Closing the modal
+      onClose();
+    } catch (error) {
+      console.error("Error signing up:", error);
+    }
   };
 
   return (
@@ -40,9 +76,7 @@ const LogInForm = ({ isOpen, onClose }) => {
           </button>
           <h2 className="text-2xl font-bold mb-6">Create your account</h2>
           <div className="space-y-3">
-            <button
-              onClick={handleSignUpWithGoogle}
-              className="w-full py-2 bg-white border border-blue-400 rounded-md flex items-center justify-center gap-2 hover:bg-gray-200">
+            <button className="w-full py-2 bg-white border border-blue-400 rounded-md flex items-center justify-center gap-2 hover:bg-gray-200">
               <FaGoogle className="text-blue-800" size={22} />
               Sign up with Google
             </button>

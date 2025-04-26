@@ -10,6 +10,7 @@ import {
   Rocket
 } from 'lucide-react';
 import LogInForm from "./LogInForm";
+import SignUpForm from "./SignUpForm";
 
 function NavBar() {
 
@@ -84,6 +85,7 @@ function NavBar() {
       </nav>
 
       {logInFormView && <LogInForm isOpen={logInFormView} onClose={viewLogIn} />}
+      {signUpFormView && <SignUpForm isOpen={signUpFormView} onClose={viewSignUp} />}
     </>
   );
 }

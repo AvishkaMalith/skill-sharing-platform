@@ -7,5 +7,5 @@ import com.skill_share_platform.Model.UserModel;
 
 @Repository
 public interface UserRepository extends MongoRepository<UserModel, String> {
-    
+    UserModel findByUserEmail(String email);
 }

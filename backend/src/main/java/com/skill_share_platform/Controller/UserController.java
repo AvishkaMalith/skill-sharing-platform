@@ -59,4 +59,15 @@ public class UserController {
     public String updateUser(@RequestBody UserDataTransferObject userDataTransferObject) {
         return userService.updateUser(userDataTransferObject);
     }
+
+    // Endpoint to get a user by email
+    @GetMapping("/email/{email}")
+    public UserModel getUserByEmail(@PathVariable String email) {
+        UserModel user = userService.getUserByEmail(email);
+        if (user == null) {
+            return null;
+        }
+        return user;
+    }
+
 }
