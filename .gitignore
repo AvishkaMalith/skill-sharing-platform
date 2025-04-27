@@ -1,9 +1,161 @@
+# Frontend - React
+# Dependencies
+frontend/node_modules
+frontend/.pnp
+frontend/.pnp.js
+
+# Testing
+frontend/coverage
+
+# Production
+frontend/build
+frontend/dist
+
+# Environment files
 .env
-./frontend/node_modules
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Ignore the target directory (where .class files are generated in a Spring Boot project)
-/target/
+# Backend - Spring Boot
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
 
-# Ignore VS Code settings
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
 .vscode/
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.lnk
+[Dd]esktop.ini
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Misc
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+*.swp
+
+# Java
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+replay_pid*
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle
+**/build/
+!src/**/build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+gradle/wrapper/gradle-wrapper.properties
+
+
+
+# Logs
+logs
+*.log
+log/
+*.log.*
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Yarn
+yarn-error.log
+.pnp/
+.pnp.js
+.yarn-integrity
+
+# dotenv environment variable files
+.env*
+
+# Temporary files
+*.tmp
+*.temp 
