@@ -16,40 +16,49 @@ public class LearningGoalController {
     private LearningGoalService learningGoalService;
 
     @PostMapping
-    public ResponseEntity<LearningGoalDTO> createLearningGoal(@RequestBody LearningGoalDTO learningGoalDTO) {
-        LearningGoalDTO createdGoal = learningGoalService.createLearningGoal(learningGoalDTO);
-        return ResponseEntity.ok(createdGoal);
+    public ResponseEntity<String> createLearningGoal(@RequestBody LearningGoalDTO learningGoalDTO) {
+        String response = learningGoalService.createLearningGoal(learningGoalDTO);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LearningGoalDTO> updateLearningGoal(
+    public ResponseEntity<String> updateLearningGoal(
             @PathVariable String id,
             @RequestBody LearningGoalDTO learningGoalDTO) {
-        LearningGoalDTO updatedGoal = learningGoalService.updateLearningGoal(id, learningGoalDTO);
-        return ResponseEntity.ok(updatedGoal);
+        String response = learningGoalService.updateLearningGoal(id, learningGoalDTO);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLearningGoal(@PathVariable String id) {
-        learningGoalService.deleteLearningGoal(id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> deleteLearningGoal(@PathVariable String id) {
+        String response = learningGoalService.deleteLearningGoal(id);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LearningGoalDTO> getLearningGoalById(@PathVariable String id) {
+    public ResponseEntity<?> getLearningGoalById(@PathVariable String id) {
         LearningGoalDTO goal = learningGoalService.getLearningGoalById(id);
+        if (goal == null) {
+            return ResponseEntity.ok("Learning Goal ID: " + id + " not found");
+        }
         return ResponseEntity.ok(goal);
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<LearningGoalDTO>> getLearningGoalsByUserId(@PathVariable String userId) {
+    public ResponseEntity<?> getLearningGoalsByUserId(@PathVariable String userId) {
         List<LearningGoalDTO> goals = learningGoalService.getLearningGoalsByUserId(userId);
+        if (goals == null || goals.isEmpty()) {
+            return ResponseEntity.ok("No learning goals found for User ID: " + userId);
+        }
         return ResponseEntity.ok(goals);
     }
 
     @GetMapping("/category/{category}")
-    public ResponseEntity<List<LearningGoalDTO>> getLearningGoalsByCategory(@PathVariable String category) {
+    public ResponseEntity<?> getLearningGoalsByCategory(@PathVariable String category) {
         List<LearningGoalDTO> goals = learningGoalService.getLearningGoalsByCategory(category);
+        if (goals == null || goals.isEmpty()) {
+            return ResponseEntity.ok("No learning goals found for category: " + category);
+        }
         return ResponseEntity.ok(goals);
     }
 } 
