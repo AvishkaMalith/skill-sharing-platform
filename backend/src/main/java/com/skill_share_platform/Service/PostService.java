@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.skill_share_platform.DataTransferObject.PostDataTransferObject;
+import com.skill_share_platform.DataTransferObject.ApiResponse;
 import com.skill_share_platform.Model.PostModel;
 import com.skill_share_platform.Repository.PostRepository;
 
@@ -18,19 +19,19 @@ public class PostService {
     private PostRepository postRepository;
 
     // Method to create a post
-    public String createPost(PostDataTransferObject postDataTransferObject) {
+    public ApiResponse createPost(PostDataTransferObject postDataTransferObject) {
         try {
             PostModel post = new PostModel();
-            post.setPostTime(new Date()); // Set the current time
+            post.setPostTime(new Date());
             post.setPublisherName(postDataTransferObject.getPublisherName());
             post.setPublisherId(postDataTransferObject.getPublisherId());
             post.setContent(postDataTransferObject.getContent());
             post.setImages(postDataTransferObject.getImages());
             post.setVideos(postDataTransferObject.getVideos());
             postRepository.save(post);
-            return "Post ID: " + post.getPostId() + " created successfully";
+            return new ApiResponse(true, "Post created successfully", post.getPostId());
         } catch (Exception e) {
-            return "Error creating post: " + e.getMessage();
+            return new ApiResponse(false, "Error creating post: " + e.getMessage(), null);
         }
     }
 
