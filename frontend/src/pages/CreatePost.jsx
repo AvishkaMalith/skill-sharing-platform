@@ -1,6 +1,5 @@
-import { useState } from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // Import Quill styles
+import { useState, useMemo } from 'react';
+import JoditEditor from 'jodit-react';
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
 import usePostStore from '../stores/postStore';
@@ -25,6 +24,28 @@ const CreatePost = () => {
 
     const [imageInput, setImageInput] = useState('');
     const [videoInput, setVideoInput] = useState('');
+
+    // Memoize the Jodit Editor configuration to prevent focus issues
+    const config = useMemo(
+        () => ({
+            readonly: false,
+            placeholder: 'Write your post content here...',
+            height: 300,
+            toolbarButtonSize: 'middle',
+            buttons: [
+                'bold', 'italic', 'underline', '|',
+                'ul', 'ol', '|',
+                'font', 'fontsize', 'paragraph', '|',
+                'image', 'video', 'table', 'link', '|',
+                'align', 'undo', 'redo', '|',
+                'hr', 'eraser', 'fullsize',
+            ],
+            uploader: {
+                insertImageAsBase64URI: true, // For testing, use base64; later, configure for file uploads
+            },
+        }),
+        []
+    );
 
     const handleAddImage = () => {
         if (imageInput.trim()) {
@@ -85,16 +106,16 @@ const CreatePost = () => {
                             />
                         </div>
 
-                        {/* Post Content (Rich Text Editor) */}
+                        {/* Post Content (Jodit Editor) */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">
                                 Post Content
                             </label>
-                            <ReactQuill
+                            <JoditEditor
                                 value={content}
-                                onChange={setContent}
-                                className="mt-1 bg-white"
-                                placeholder="Write your post content here..."
+                                config={config}
+                                onBlur={(newContent) => setContent(newContent)} // Update content on blur for better performance
+                                onChange={() => {}} // Empty onChange to prevent unnecessary re-renders
                             />
                         </div>
 
