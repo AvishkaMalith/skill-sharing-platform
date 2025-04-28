@@ -1,6 +1,7 @@
 package com.skill_share_platform.Controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,8 +63,8 @@ public class UserController {
 
     // Endpoint to get a user by email
     @GetMapping("/email/{email}")
-    public UserModel getUserByEmail(@PathVariable String email) {
-        UserModel user = userService.getUserByEmail(email);
+    public Optional<UserModel> getUserByEmail(@PathVariable String email) {
+        Optional<UserModel> user = userService.getUserByEmail(email);
         if (user == null) {
             return null;
         }

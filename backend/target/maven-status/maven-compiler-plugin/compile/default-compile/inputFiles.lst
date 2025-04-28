@@ -1,6 +1,7 @@
 C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\BackendApplication.java
 C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\Config\CORS.java
 C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\Config\SecurityConfig.java
+C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\Controller\OAuth2Controller.java
 C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\Controller\UserController.java
 C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\DataTransferObject\UserDataTransferObject.java
 C:\Users\avish\Downloads\coding\skill-sharing-platform\backend\src\main\java\com\skill_share_platform\Model\UserModel.java

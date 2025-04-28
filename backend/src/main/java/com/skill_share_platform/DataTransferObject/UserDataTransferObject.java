@@ -20,7 +20,7 @@ public class UserDataTransferObject {
     // Social interactions
     private List<String> followers;
     private List<String> following;
-    private Map<String, String> badges;
+    private List<String> badges;
     // user roles
     private List<String> roles;
     private boolean enabled;
@@ -35,7 +35,7 @@ public class UserDataTransferObject {
     public UserDataTransferObject(String userId, String userName, String userEmail, String userPassword,
             String fullName, String bio,
             String profilePictureUrl, String location, List<String> currentSkills, Map<String, String> socialLinks,
-            List<String> followers, List<String> following, Map<String, String> badges, List<String> roles,
+            List<String> followers, List<String> following, List<String> badges, List<String> roles,
             boolean enabled, Date createdAt, Date updatedAt) {
         this.userId = userId;
         this.userName = userName;
@@ -105,7 +105,7 @@ public class UserDataTransferObject {
         this.following = following;
     }
 
-    public void setBadges(Map<String, String> badges) {
+    public void setBadges(List<String> badges) {
         this.badges = badges;
     }
 
@@ -174,7 +174,7 @@ public class UserDataTransferObject {
         return following;
     }
 
-    public Map<String, String> getBadges() {
+    public List<String> getBadges() {
         return badges;
     }
 
