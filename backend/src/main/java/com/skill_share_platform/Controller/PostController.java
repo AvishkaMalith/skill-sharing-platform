@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.skill_share_platform.DataTransferObject.PostDataTransferObject;
+import com.skill_share_platform.DataTransferObject.ApiResponse;
 import com.skill_share_platform.Model.PostModel;
 import com.skill_share_platform.Service.PostService;
 
@@ -28,7 +29,7 @@ public class PostController {
     // Endpoint to create a post
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public String createPost(@RequestBody PostDataTransferObject postDataTransferObject) {
+    public ApiResponse createPost(@RequestBody PostDataTransferObject postDataTransferObject) {
         return postService.createPost(postDataTransferObject);
     }
 

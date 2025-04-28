@@ -37,7 +37,7 @@ const usePostStore = create((set) => ({
 
             const result = await response.json();
             if (response.ok) {
-                set({ success: result, isLoading: false });
+                set({ success: result.message, isLoading: false }); // Use result.message for the success message
                 // Reset form after successful submission
                 set({
                     content: '',
