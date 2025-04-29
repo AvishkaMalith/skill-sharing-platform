@@ -25,212 +25,293 @@ const UserProfile = ({ userData, onSave }) => {
     }));
   };
 
+  const handleMapChange = (name, key, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: {
+        ...prev[name],
+        [key]: value,
+      },
+    }));
+  };
+
   const handleSaveClick = () => {
     onSave(formData);
     setEditMode(false);
   };
 
-  if (!userData) return <div className="text-center p-10 text-gray-500 text-xl">No user data found.</div>;
+  if (!userData)
+    return (
+      <div className="text-center p-10 text-gray-600 text-xl">
+        No user data found.
+      </div>
+    );
 
   return (
-    <div className="min-h-screen w-full bg-gray-100 flex flex-col lg:flex-row">
-      {/* Sidebar: Profile Header */}
-      <div className="lg:w-1/3 w-full bg-white shadow-lg p-8 flex flex-col items-center lg:min-h-screen">
-        <img
-          src={formData.profilePictureUrl || "https://via.placeholder.com/150"}
-          alt="Profile"
-          className="w-48 h-48 rounded-full object-cover border-4 border-gray-100 shadow-md mb-6"
-        />
-        {editMode ? (
-          <input
-            type="text"
-            name="fullName"
-            value={formData.fullName || ""}
-            onChange={handleChange}
-            className="bg-transparent border-b-2 border-gray-300 w-full text-center text-3xl font-bold text-gray-800 focus:outline-none focus:border-indigo-500 py-2"
-            placeholder="Full Name"
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center py-8">
+      <div className="w-full max-w-4xl bg-white rounded-lg shadow-md p-8">
+        {/* Profile Header */}
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-8">
+          <img
+            src={formData.profilePictureUrl || "https://via.placeholder.com/150"}
+            alt="Profile"
+            className="w-32 h-32 rounded-full object-cover border-4 border-blue-500"
           />
-        ) : (
-          <h1 className="text-4xl font-bold text-gray-900">{formData.fullName}</h1>
-        )}
-        <p className="text-sm text-gray-500 mt-2">{formData.location}</p>
-
-        {/* Social Links */}
-        <div className="flex flex-wrap justify-center gap-6 mt-8">
-          {formData.socialLinks &&
-            Object.entries(formData.socialLinks).map(([platform, link]) => (
-              <a
-                key={platform}
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-indigo-600 hover:text-indigo-800 font-medium transition-colors text-lg"
-              >
-                {platform}
-              </a>
-            ))}
-        </div>
-
-        {/* Badges */}
-        <div className="mt-10 w-full">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">Badges</h2>
-          <div className="flex flex-wrap justify-center gap-4">
-            {formData.badges &&
-              formData.badges.map((badge, idx) => (
-                <span
-                  key={idx}
-                  className="bg-indigo-100 text-indigo-700 px-5 py-2 rounded-full text-sm font-semibold shadow-sm"
-                >
-                  {badge}
-                </span>
-              ))}
+          <div className="text-center md:text-left">
+            {editMode ? (
+              <input
+                type="text"
+                name="fullName"
+                value={formData.fullName || ""}
+                onChange={handleChange}
+                className="bg-transparent border-b-2 border-gray-300 w-full text-3xl font-bold text-gray-800 focus:outline-none focus:border-blue-500 py-2 text-center md:text-left"
+                placeholder="Full Name"
+              />
+            ) : (
+              <h1 className="text-3xl font-bold text-gray-800">
+                {formData.fullName}
+              </h1>
+            )}
+            <p className="text-lg text-gray-600 mt-1">@{formData.userName}</p>
+            <p className="text-gray-600 mt-1">
+              <span className="font-semibold">Location:</span>{" "}
+              {formData.location || "Not specified"}
+            </p>
+            <p className="text-gray-600 mt-1">
+              <span className="font-semibold">Joined:</span>{" "}
+              {formData.createdAt
+                ? new Date(formData.createdAt).toLocaleDateString()
+                : "-"}
+            </p>
           </div>
         </div>
-      </div>
 
-      {/* Main Content: Profile Information */}
-      <div className="lg:w-2/3 w-full p-8 bg-gray-50">
-        <div className="max-w-4xl mx-auto">
-          {/* Profile Info and Edit Button */}
-          <div className="flex justify-between items-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900">Profile Information</h2>
-            <button
-              onClick={() => (editMode ? handleSaveClick() : setEditMode(true))}
-              className={`px-8 py-3 rounded-lg text-white font-medium transition-colors text-lg ${
-                editMode ? "bg-green-600 hover:bg-green-700" : "bg-indigo-600 hover:bg-indigo-700"
-              }`}
-            >
-              {editMode ? "Save" : "Edit"}
-            </button>
+        {/* Edit/Save Button */}
+        <div className="flex justify-end mb-6">
+          <button
+            onClick={() => (editMode ? handleSaveClick() : setEditMode(true))}
+            className={`px-6 py-2 rounded-lg text-white font-medium transition-colors ${
+              editMode
+                ? "bg-green-600 hover:bg-green-700"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
+          >
+            {editMode ? "Save" : "Edit"}
+          </button>
+        </div>
+
+        {/* Profile Information */}
+        <div className="space-y-6">
+          {/* Bio */}
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Bio</h2>
+            {editMode ? (
+              <textarea
+                name="bio"
+                value={formData.bio || ""}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Tell us about yourself..."
+                rows="4"
+              />
+            ) : (
+              <p className="text-gray-700">
+                {formData.bio || "No bio provided."}
+              </p>
+            )}
           </div>
 
-          {/* Other Fields */}
-          <div className="space-y-10">
-            {/* Username */}
-            <div>
-              <label className="block text-gray-600 text-sm font-medium mb-2">Username</label>
-              {editMode ? (
-                <input
-                  type="text"
-                  name="userName"
-                  value={formData.userName || ""}
-                  onChange={handleChange}
-                  className="border-b-2 border-gray-200 w-full focus:outline-none focus:border-indigo-500 py-2 text-gray-700 text-lg"
-                  placeholder="Username"
-                />
-              ) : (
-                <p className="text-xl text-gray-800">{formData.userName}</p>
-              )}
-            </div>
+          {/* Email */}
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Email</h2>
+            {editMode ? (
+              <input
+                type="email"
+                name="userEmail"
+                value={formData.userEmail || ""}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Email Address"
+              />
+            ) : (
+              <p className="text-gray-700">{formData.userEmail}</p>
+            )}
+          </div>
 
-            {/* Email */}
-            <div>
-              <label className="block text-gray-600 text-sm font-medium mb-2">Email</label>
-              {editMode ? (
-                <input
-                  type="email"
-                  name="userEmail"
-                  value={formData.userEmail || ""}
-                  onChange={handleChange}
-                  className="border-b-2 border-gray-200 w-full focus:outline-none focus:border-indigo-500 py-2 text-gray-700 text-lg"
-                  placeholder="Email Address"
-                />
-              ) : (
-                <p className="text-xl text-gray-800">{formData.userEmail}</p>
-              )}
-            </div>
-
-            {/* Bio */}
-            <div>
-              <label className="block text-gray-600 text-sm font-medium mb-2">Bio</label>
-              {editMode ? (
-                <textarea
-                  name="bio"
-                  value={formData.bio || ""}
-                  onChange={handleChange}
-                  className="border-b-2 border-gray-200 w-full focus:outline-none focus:border-indigo-500 py-2 text-gray-700 text-lg resize-none"
-                  placeholder="Tell us about yourself..."
-                  rows="4"
-                />
-              ) : (
-                <p className="text-gray-700 leading-relaxed text-lg">{formData.bio}</p>
-              )}
-            </div>
-
-            {/* Skills */}
-            <div>
-              <label className="block text-gray-600 text-sm font-medium mb-2">Skills</label>
-              {editMode ? (
-                <input
-                  type="text"
-                  name="currentSkills"
-                  value={formData.currentSkills ? formData.currentSkills.join(", ") : ""}
-                  onChange={(e) => handleListChange("currentSkills", e.target.value)}
-                  className="border-b-2 border-gray-200 w-full focus:outline-none focus:border-indigo-500 py-2 text-gray-700 text-lg"
-                  placeholder="Skill1, Skill2, Skill3"
-                />
-              ) : (
-                <div className="flex flex-wrap gap-4">
-                  {formData.currentSkills &&
-                    formData.currentSkills.map((skill, idx) => (
-                      <span
-                        key={idx}
-                        className="bg-gray-100 text-gray-700 px-5 py-2 rounded-full text-sm font-medium shadow-sm"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                </div>
-              )}
-            </div>
-
-            {/* Followers and Following */}
-            <div className="flex gap-12">
-              <div>
-                <label className="block text-gray-600 text-sm font-medium mb-2">Followers</label>
-                <p className="text-xl text-gray-800">{formData.followers ? formData.followers.length : 0}</p>
+          {/* Skills */}
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Skills</h2>
+            {editMode ? (
+              <input
+                type="text"
+                name="currentSkills"
+                value={formData.currentSkills?.join(", ") || ""}
+                onChange={(e) => handleListChange("currentSkills", e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Skill1, Skill2, Skill3"
+              />
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {formData.currentSkills?.length > 0 ? (
+                  formData.currentSkills.map((skill, idx) => (
+                    <span
+                      key={idx}
+                      className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full"
+                    >
+                      {skill}
+                    </span>
+                  ))
+                ) : (
+                  <p className="text-gray-600">No skills listed.</p>
+                )}
               </div>
-              <div>
-                <label className="block text-gray-600 text-sm font-medium mb-2">Following</label>
-                <p className="text-xl text-gray-800">{formData.following ? formData.following.length : 0}</p>
-              </div>
-            </div>
+            )}
+          </div>
 
-            {/* Roles */}
-            <div>
-              <label className="block text-gray-600 text-sm font-medium mb-2">Roles</label>
-              {editMode ? (
-                <input
-                  type="text"
-                  name="roles"
-                  value={formData.roles ? formData.roles.join(", ") : ""}
-                  onChange={(e) => handleListChange("roles", e.target.value)}
-                  className="border-b-2 border-gray-200 w-full focus:outline-none focus:border-indigo-500 py-2 text-gray-700 text-lg"
-                  placeholder="user, admin"
-                />
+          {/* Social Links */}
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">
+              Social Links
+            </h2>
+            {editMode ? (
+              <div className="space-y-2">
+                {["twitter", "linkedin", "github"].map((platform) => (
+                  <input
+                    key={platform}
+                    type="text"
+                    name="socialLinks"
+                    value={formData.socialLinks?.[platform] || ""}
+                    onChange={(e) =>
+                      handleMapChange("socialLinks", platform, e.target.value)
+                    }
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder={`${platform} URL`}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex gap-4">
+                {formData.socialLinks &&
+                Object.entries(formData.socialLinks).length > 0 ? (
+                  Object.entries(formData.socialLinks).map(
+                    ([platform, link]) =>
+                      link && (
+                        <a
+                          key={platform}
+                          href={link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                        </a>
+                      )
+                  )
+                ) : (
+                  <p className="text-gray-600">No social links provided.</p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Badges */}
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Badges</h2>
+            <div className="flex flex-wrap gap-4">
+              {formData.badges && Object.entries(formData.badges).length > 0 ? (
+                Object.entries(formData.badges).map(([name, year], idx) => (
+                  <div
+                    key={idx}
+                    className="bg-yellow-100 text-yellow-800 text-sm font-medium px-3 py-1 rounded-full"
+                  >
+                    {name} ({year})
+                  </div>
+                ))
               ) : (
-                <p className="text-xl text-gray-800">{formData.roles ? formData.roles.join(", ") : ""}</p>
+                <p className="text-gray-600">No badges earned.</p>
               )}
             </div>
+          </div>
 
-            {/* Account Status */}
-            <div>
-              <label className="block text-gray-600 text-sm font-medium mb-2">Account Status</label>
-              <p className={formData.enabled ? "text-green-600 font-medium text-lg" : "text-red-600 font-medium text-lg"}>
-                {formData.enabled ? "Enabled" : "Disabled"}
+          {/* Followers and Following */}
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Stats</h2>
+            <div className="flex gap-6">
+              <p className="text-gray-700">
+                <span className="font-semibold">Followers:</span>{" "}
+                {formData.followers?.length || 0}
+              </p>
+              <p className="text-gray-700">
+                <span className="font-semibold">Following:</span>{" "}
+                {formData.following?.length || 0}
               </p>
             </div>
+          </div>
 
-            {/* Created At / Updated At */}
-            <div className="flex gap-12">
-              <div>
-                <label className="block text-gray-600 text-sm font-medium mb-2">Created At</label>
-                <p className="text-xl text-tdray-800">{formData.createdAt ? new Date(formData.createdAt).toLocaleDateString() : "-"}</p>
+          {/* Roles */}
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Roles</h2>
+            {editMode ? (
+              <input
+                type="text"
+                name="roles"
+                value={formData.roles?.join(", ") || ""}
+                onChange={(e) => handleListChange("roles", e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Mentor, Learner"
+              />
+            ) : (
+              <div className="flex gap-2">
+                {formData.roles?.length > 0 ? (
+                  formData.roles.map((role, idx) => (
+                    <span
+                      key={idx}
+                      className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full"
+                    >
+                      {role}
+                    </span>
+                  ))
+                ) : (
+                  <p className="text-gray-600">No roles assigned.</p>
+                )}
               </div>
-              <div>
-                <label className="block text-gray-600 text-sm font-medium mb-2">Updated At</label>
-                <p className="text-xl text-gray-800">{formData.updatedAt ? new Date(formData.updatedAt).toLocaleDateString() : "-"}</p>
-              </div>
+            )}
+          </div>
+
+          {/* Account Status */}
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">
+              Account Status
+            </h2>
+            <p
+              className={
+                formData.enabled
+                  ? "text-green-600 font-medium"
+                  : "text-red-600 font-medium"
+              }
+            >
+              {formData.enabled ? "Enabled" : "Disabled"}
+            </p>
+          </div>
+
+          {/* Created At / Updated At */}
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">
+              Account Dates
+            </h2>
+            <div className="flex gap-6">
+              <p className="text-gray-700">
+                <span className="font-semibold">Created:</span>{" "}
+                {formData.createdAt
+                  ? new Date(formData.createdAt).toLocaleDateString()
+                  : "-"}
+              </p>
+              <p className="text-gray-700">
+                <span className="font-semibold">Updated:</span>{" "}
+                {formData.updatedAt
+                  ? new Date(formData.updatedAt).toLocaleDateString()
+                  : "-"}
+              </p>
             </div>
           </div>
         </div>
