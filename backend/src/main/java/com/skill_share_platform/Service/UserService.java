@@ -1,14 +1,14 @@
 package com.skill_share_platform.Service;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.skill_share_platform.Repository.UserRepository;
 import com.skill_share_platform.DataTransferObject.UserDataTransferObject;
 import com.skill_share_platform.Model.UserModel;
+import com.skill_share_platform.Repository.UserRepository;
 
 @Service
 public class UserService {
@@ -112,11 +112,22 @@ public class UserService {
                 // Saving the updated user object to the database
                 userRepository.save(existingUser);
                 return "User ID : " + userDataTransferObject.getUserId() + " updated successfully";
+
             } else {
                 return "User ID : " + userDataTransferObject.getUserId() + " not found";
             }
         } catch (Exception e) {
             return "Error updating user: " + e.getMessage();
+        }
+    }
+
+    // Method to get the user by attribute
+    public UserModel getUserByEmail(String email) {
+        try {
+            return userRepository.findByUserEmail(email);
+        } catch (Exception e) {
+            System.out.println("Error fetching user by email: " + e.getMessage());
+            return null;
         }
     }
 
