@@ -15,12 +15,12 @@ public class UserDataTransferObject {
     private String bio;
     private String profilePictureUrl;
     private String location;
+    private List<String> badges;
     private List<String> currentSkills;
     private Map<String, String> socialLinks;
     // Social interactions
     private List<String> followers;
     private List<String> following;
-    private List<String> badges;
     // user roles
     private List<String> roles;
     private boolean enabled;
@@ -34,8 +34,8 @@ public class UserDataTransferObject {
     // Parameterized constructor
     public UserDataTransferObject(String userId, String userName, String userEmail, String userPassword,
             String fullName, String bio,
-            String profilePictureUrl, String location, List<String> currentSkills, Map<String, String> socialLinks,
-            List<String> followers, List<String> following, List<String> badges, List<String> roles,
+            String profilePictureUrl, String location, List<String> badges, List<String> currentSkills, Map<String, String> socialLinks,
+            List<String> followers, List<String> following, List<String> roles,
             boolean enabled, Date createdAt, Date updatedAt) {
         this.userId = userId;
         this.userName = userName;

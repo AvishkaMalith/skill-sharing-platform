@@ -1,12 +1,10 @@
-import Home from "./pages/Home";
-import HomePage from "./components/HomePage";
+import ProfilePage from "./components/ProfilePage";
 
 const App = () => {
 
   return (
     <>
-      <Home />
-      <HomePage />
+      <ProfilePage />
     </>
   );
 };

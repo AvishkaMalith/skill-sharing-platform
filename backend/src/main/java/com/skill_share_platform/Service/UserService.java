@@ -40,8 +40,8 @@ public class UserService {
             user.setCreatedAt(userDataTransferObject.getCreatedAt());
             user.setUpdatedAt(userDataTransferObject.getUpdatedAt());
             // Saving the user object to the database
-            userRepository.save(user);
-            return "User ID : " + userDataTransferObject.getUserId() + " created successfully";
+            UserModel savedUser = userRepository.save(user);
+            return "User ID : " + savedUser.getUserId() + " created successfully";
         } catch (Exception e) {
             return "Error creating user: " + e.getMessage();
         }
