@@ -200,7 +200,7 @@ const CreatePost = () => {
                         )}
                         {success && (
                             <p className="text-green-500 text-center mt-4">
-                                Post created successfully! {success}
+                                 {success}
                             </p>
                         )}
                     </div>
