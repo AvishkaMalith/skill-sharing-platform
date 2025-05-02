@@ -4,7 +4,7 @@ const Hero = () => {
   return (
     <section className="bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col-reverse lg:flex-row items-center py-20 lg:py-32">
+        <div className="flex flex-col-reverse lg:flex-row items-center py-4 lg:py-16">
           
           <div className="w-full lg:w-1/2 text-center lg:text-left">
             <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight">
