@@ -1,124 +1,134 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-
+import { useState } from "react";
 import { X } from "lucide-react";
 import { FaGoogle, FaFacebook } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-hot-toast";
 
-const LogInForm = ({ isOpen, onClose }) => {
-
-  const [signUpFormData, setSignUpFormData] = useState({
-    userName: "",
-    userEmail: "",
-    userPassword: "",
+const SignUpForm = ({ isOpen, onClose }) => {
+  const { register, loginWithGoogle } = useAuth();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
     fullName: "",
-    bio: "",
-    profilePictureUrl: "",
-    location: "",
-    currentSkills: [],
-    socialLinks: {},
-    followers: [],
-    following: [],
-    badges: {},
-    roles: [],
-    enabled: true,
-    createdAt: new Date(),
-    updatedAt: ""
+    confirmPassword: ""
   });
+  const [loading, setLoading] = useState(false);
 
   const handleFormChange = (e) => {
-    setSignUpFormData({
-      ...signUpFormData,
+    setFormData({
+      ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-  useEffect(() => {
-    // Need to code the function "Check if the userEmail is already taken"
-    setSignUpFormData((prevData) => ({
-      ...prevData,
-      userName : signUpFormData.userEmail.split("@")[0].toLowerCase(),
-    }));
-  }, [signUpFormData.userEmail]);
-
   const handleSignUpWithEmail = async (e) => {
-    // Prevent from refreshing
     e.preventDefault();
+    
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
     try {
-      // Sending the POST request
-      const response = await axios.post("http://localhost:8080/api/users/create", signUpFormData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      // Resetting the form data to its default values
-      setSignUpFormData({
-        fullName: "",
-        userName: "",
-        userEmail: "",
-        userPassword: ""
-      });
-      // Closing the modal
+      setLoading(true);
+      await register(formData.email, formData.password, formData.fullName);
+      toast.success("Successfully registered!");
       onClose();
     } catch (error) {
-      console.error("Error signing up:", error);
+      toast.error(error.message || "Failed to register");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    (isOpen && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-      <div className="bg-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row animate-fadeIn scale-95">
-        <div className="hidden md:flex w-1/2 bg-gradient-to-tr from-blue-400 to-blue-500 items-center justify-center text-white p-10">
-          <h2 className="text-3xl font-bold">Join our community !</h2>
-        </div>
-        <div className="w-full md:w-1/2 p-8 relative">
-          <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
-            <X />
-          </button>
-          <h2 className="text-2xl font-bold mb-6">Create your account</h2>
-          <div className="space-y-3">
-            <button className="w-full py-2 bg-white border border-blue-400 rounded-md flex items-center justify-center gap-2 hover:bg-gray-200">
-              <FaGoogle className="text-blue-800" size={22} />
-              Sign up with Google
-            </button>
-            <button className="w-full py-2 bg-white border border-blue-400 rounded-md flex items-center justify-center gap-2 hover:bg-gray-200">
-              <FaFacebook className="text-blue-800" size={22} />
-              Sign up with FaceBook
-            </button>
+    isOpen && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+        <div className="bg-white w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row animate-fadeIn scale-95">
+          <div className="hidden md:flex w-1/2 bg-gradient-to-tr from-blue-400 to-blue-500 items-center justify-center text-white p-10">
+            <h2 className="text-3xl font-bold">Join our community!</h2>
           </div>
-          <div className="my-6 text-center text-md text-gray-500">or sign up with email</div>
-          <form onSubmit={handleSignUpWithEmail} className="space-y-4">
-            <input
-              className="w-full border border-blue-400 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              type="email"
-              placeholder="Email"
-              onChange={handleFormChange}
-              name="userEmail"
-              required
-            />
-            <input
-              className="w-full border border-blue-400 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              type="password"
-              placeholder="Password"
-              onChange={handleFormChange}
-              name="userPassword"
-              required
-            />
-            <div className="flex items-start text-sm">
+          <div className="w-full md:w-1/2 p-8 relative">
+            <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+              <X />
+            </button>
+            <h2 className="text-2xl font-bold mb-6">Create your account</h2>
+            <div className="space-y-3">
+              <button
+                onClick={loginWithGoogle}
+                className="w-full py-2 bg-white border border-blue-400 rounded-md flex items-center justify-center gap-2 hover:bg-gray-200"
+              >
+                <FaGoogle className="text-blue-800" size={22} />
+                Sign up with Google
+              </button>
+              <button className="w-full py-2 bg-white border border-blue-400 rounded-md flex items-center justify-center gap-2 hover:bg-gray-200">
+                <FaFacebook className="text-blue-800" size={22} />
+                Sign up with Facebook
+              </button>
+            </div>
+            <div className="my-6 text-center text-md text-gray-500">or sign up with email</div>
+            <form onSubmit={handleSignUpWithEmail} className="space-y-4">
               <input
-                type="checkbox"
-                className="mr-2 mt-1"
+                className="w-full border border-blue-400 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="text"
+                placeholder="Full Name"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleFormChange}
                 required
               />
-              <label>I agree to the <a href="#" className="text-blue-600 underline">terms</a></label>
-            </div>
-            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-              Log In
-            </button>
-          </form>
+              <input
+                className="w-full border border-blue-400 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="email"
+                placeholder="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleFormChange}
+                required
+              />
+              <input
+                className="w-full border border-blue-400 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="password"
+                placeholder="Password"
+                name="password"
+                value={formData.password}
+                onChange={handleFormChange}
+                required
+              />
+              <input
+                className="w-full border border-blue-400 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="password"
+                placeholder="Confirm Password"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleFormChange}
+                required
+              />
+              <div className="flex items-start text-sm">
+                <input
+                  type="checkbox"
+                  className="mr-2 mt-1"
+                  required
+                />
+                <label>I agree to the <a href="#" className="text-blue-600 underline">terms</a></label>
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className={`w-full py-2 rounded ${
+                  loading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                }`}
+              >
+                {loading ? "Creating account..." : "Sign Up"}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
-    </div>)
+    )
   );
 };
 
-export default LogInForm;
+export default SignUpForm;
