@@ -6,6 +6,7 @@ const usePostStore = create((set) => ({
     videos: [],
     publisherName: '',
     publisherId: '',
+    postTitle: '',
     isLoading: false,
     error: null,
     success: null,
@@ -13,6 +14,7 @@ const usePostStore = create((set) => ({
     setContent: (content) => set({ content }),
     setImages: (images) => set({ images }),
     setVideos: (videos) => set({ videos }),
+    setPostTitle: (postTitle) => set({ postTitle }),
     setPublisherName: (publisherName) => set({ publisherName }),
     setPublisherId: (publisherId) => set({ publisherId }),
 
@@ -22,6 +24,7 @@ const usePostStore = create((set) => ({
             const postData = {
                 publisherName: usePostStore.getState().publisherName,
                 publisherId: usePostStore.getState().publisherId,
+                postTitle: usePostStore.getState().postTitle,
                 content: usePostStore.getState().content,
                 images: usePostStore.getState().images,
                 videos: usePostStore.getState().videos,
@@ -43,6 +46,7 @@ const usePostStore = create((set) => ({
                     content: '',
                     images: [],
                     videos: [],
+                    postTitle: '',
                     publisherName: '',
                     publisherId: '',
                 });

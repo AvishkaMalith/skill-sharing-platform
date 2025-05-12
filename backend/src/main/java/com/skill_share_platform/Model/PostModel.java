@@ -13,6 +13,7 @@ public class PostModel {
     private Date postTime;
     private String publisherName;
     private String publisherId;
+    private String postTitle;
     private String content;
     private List<String> images;
     private List<String> videos;
@@ -22,12 +23,13 @@ public class PostModel {
     }
 
     // Parameterized constructor
-    public PostModel(String postId, Date postTime, String publisherName, String publisherId, String content,
+    public PostModel(String postId, Date postTime, String publisherName, String publisherId,String postTitle, String content,
                      List<String> images, List<String> videos) {
         this.postId = postId;
         this.postTime = postTime;
         this.publisherName = publisherName;
         this.publisherId = publisherId;
+        this.postTitle = postTitle;
         this.content = content;
         this.images = images;
         this.videos = videos;
@@ -65,6 +67,10 @@ public class PostModel {
     public void setPublisherId(String publisherId) {
         this.publisherId = publisherId;
     }
+
+    public String getPostTitle() { return postTitle; }
+
+    public void setPostTitle(String postTitle) { this.postTitle = postTitle; }
 
     public String getContent() {
         return content;

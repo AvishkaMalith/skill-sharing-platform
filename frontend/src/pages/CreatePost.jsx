@@ -11,6 +11,7 @@ const CreatePost = () => {
         videos,
         publisherName,
         publisherId,
+        postTitle,
         isLoading,
         error,
         success,
@@ -19,6 +20,7 @@ const CreatePost = () => {
         setVideos,
         setPublisherName,
         setPublisherId,
+        setPostTitle,
         createPost,
     } = usePostStore();
 
@@ -102,6 +104,22 @@ const CreatePost = () => {
                                 onChange={(e) => setPublisherId(e.target.value)}
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="Enter your ID"
+                                required
+                            />
+                        </div>
+
+
+                        {/* Post Title */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Post Title
+                            </label>
+                            <input
+                                type="text"
+                                value={postTitle}
+                                onChange={(e) => setPostTitle(e.target.value)}
+                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Enter post title"
                                 required
                             />
                         </div>

@@ -25,11 +25,12 @@ public class PostService {
             post.setPostTime(new Date());
             post.setPublisherName(postDataTransferObject.getPublisherName());
             post.setPublisherId(postDataTransferObject.getPublisherId());
+            post.setPostTitle(postDataTransferObject.getPostTitle());
             post.setContent(postDataTransferObject.getContent());
             post.setImages(postDataTransferObject.getImages());
             post.setVideos(postDataTransferObject.getVideos());
             postRepository.save(post);
-            return new ApiResponse(true, "Post created successfully", post.getPostId());
+            return new ApiResponse(true, "Post created successfully !", post.getPostId());
         } catch (Exception e) {
             return new ApiResponse(false, "Error creating post: " + e.getMessage(), null);
         }
@@ -60,6 +61,7 @@ public class PostService {
         try {
             if (postRepository.existsById(postDataTransferObject.getPostId())) {
                 PostModel existingPost = postRepository.findById(postDataTransferObject.getPostId()).get();
+                existingPost.setPostTitle(postDataTransferObject.getPostTitle());
                 existingPost.setContent(postDataTransferObject.getContent());
                 existingPost.setImages(postDataTransferObject.getImages());
                 existingPost.setVideos(postDataTransferObject.getVideos());
