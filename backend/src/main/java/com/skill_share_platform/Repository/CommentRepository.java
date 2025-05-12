@@ -1,11 +1,10 @@
 package com.skill_share_platform.Repository;
 
-import org.springframework.stereotype.Repository;
+import com.skill_share_platform.Model.CommentModel;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import com.skill_share_platform.Model.CommentModel;
+import java.util.List;
 
-@Repository
 public interface CommentRepository extends MongoRepository<CommentModel, String> {
-    
+    List<CommentModel> findByPostId(String postId);
 }
