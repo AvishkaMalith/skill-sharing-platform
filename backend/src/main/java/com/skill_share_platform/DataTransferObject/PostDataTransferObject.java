@@ -5,6 +5,7 @@ import java.util.List;
 
 public class PostDataTransferObject {
     private String postId;
+    private String userId;
     private Date postTime;
     private String publisherName;
     private String publisherId;
@@ -17,9 +18,10 @@ public class PostDataTransferObject {
     }
 
     // Parameterized constructor
-    public PostDataTransferObject(String postId, Date postTime, String publisherName, String publisherId,
+    public PostDataTransferObject(String postId, String userId, Date postTime, String publisherName, String publisherId,
                                   String content, List<String> images, List<String> videos) {
         this.postId = postId;
+        this.userId = userId;
         this.postTime = postTime;
         this.publisherName = publisherName;
         this.publisherId = publisherId;
@@ -32,7 +34,14 @@ public class PostDataTransferObject {
     public String getPostId() {
         return postId;
     }
+    public String getUserId() {
+        return userId;
+    }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+    
     public void setPostId(String postId) {
         this.postId = postId;
     }

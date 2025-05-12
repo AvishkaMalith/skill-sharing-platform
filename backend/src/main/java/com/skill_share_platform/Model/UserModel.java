@@ -20,12 +20,12 @@ public class UserModel {
     private String bio;
     private String profilePictureUrl;
     private String location;
+    private List<String> badges;
     private List<String> currentSkills;
     private Map<String, String> socialLinks;
     // Social interactions
     private List<String> followers;
     private List<String> following;
-    private Map<String, String> badges;
     // user roles
     private List<String> roles;
     private boolean enabled;
@@ -38,8 +38,8 @@ public class UserModel {
 
     // Parameterized constructor
     public UserModel(String userId, String userName, String userEmail, String userPassword, String fullName, String bio,
-            String profilePictureUrl, String location, List<String> currentSkills, Map<String, String> socialLinks,
-            List<String> followers, List<String> following, Map<String, String> badges, List<String> roles,
+            String profilePictureUrl, String location, List<String> badges, List<String> currentSkills, Map<String, String> socialLinks,
+            List<String> followers, List<String> following, List<String> roles,
             boolean enabled, Date createdAt, Date updatedAt) {
         this.userId = userId;
         this.userName = userName;
@@ -49,11 +49,11 @@ public class UserModel {
         this.bio = bio;
         this.profilePictureUrl = profilePictureUrl;
         this.location = location;
+        this.badges = badges;
         this.currentSkills = currentSkills;
         this.socialLinks = socialLinks;
         this.followers = followers;
         this.following = following;
-        this.badges = badges;
         this.roles = roles;
         this.enabled = enabled;
         this.createdAt = createdAt;
@@ -109,7 +109,7 @@ public class UserModel {
         this.following = following;
     }
 
-    public void setBadges(Map<String, String> badges) {
+    public void setBadges(List<String> badges) {
         this.badges = badges;
     }
 
@@ -178,7 +178,7 @@ public class UserModel {
         return following;
     }
 
-    public Map<String, String> getBadges() {
+    public List<String> getBadges() {
         return badges;
     }
 
