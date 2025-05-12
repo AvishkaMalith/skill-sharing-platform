@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { dashboard, auth } from '../services/api';
 import '../assets/Dashboard.css';
 import Footer from '../components/Footer';
+import Cookies from 'js-cookie';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -23,6 +24,11 @@ const Dashboard = () => {
         // Fetch dashboard data
         const response = await dashboard.getData();
         setUser(response.data.user);
+        // Set cookies for userName and userId
+        if (response.data.user) {
+          Cookies.set('userName', response.data.user.userName, { expires: 7 });
+          Cookies.set('userId', response.data.user.userId, { expires: 7 });
+        }
       } catch (err) {
         console.error('Dashboard data fetch error:', err);
         if (err.response && err.response.status === 401) {
@@ -41,6 +47,8 @@ const Dashboard = () => {
   const handleLogout = async () => {
     try {
       await auth.logout();
+      // Remove all cookies on logout
+      Object.keys(Cookies.get()).forEach(cookieName => Cookies.remove(cookieName));
       navigate('/login');
     } catch (err) {
       console.error('Logout error:', err);
