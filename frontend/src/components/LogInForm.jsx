@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
 
 import { X } from "lucide-react";
 import { FaGoogle, FaFacebook } from "react-icons/fa";

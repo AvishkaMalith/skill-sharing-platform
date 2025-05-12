@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-
 import { X } from "lucide-react";
 import { FaGoogle, FaFacebook } from "react-icons/fa";
+import useUserProfileStore from "../stores/userProfile";
 
 const LogInForm = ({ isOpen, onClose }) => {
+
+  const { createUserProfile } = useUserProfileStore();
 
   const [signUpFormData, setSignUpFormData] = useState({
     userName: "",
@@ -36,7 +37,7 @@ const LogInForm = ({ isOpen, onClose }) => {
     // Need to code the function "Check if the userEmail is already taken"
     setSignUpFormData((prevData) => ({
       ...prevData,
-      userName : signUpFormData.userEmail.split("@")[0].toLowerCase(),
+      userName: signUpFormData.userEmail.split("@")[0].toLowerCase(),
     }));
   }, [signUpFormData.userEmail]);
 
@@ -44,18 +45,26 @@ const LogInForm = ({ isOpen, onClose }) => {
     // Prevent from refreshing
     e.preventDefault();
     try {
-      // Sending the POST request
-      const response = await axios.post("http://localhost:8080/api/users/create", signUpFormData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      // Calling the createUserProfile function from the store
+      await createUserProfile(signUpFormData);
       // Resetting the form data to its default values
       setSignUpFormData({
-        fullName: "",
         userName: "",
         userEmail: "",
-        userPassword: ""
+        userPassword: "",
+        fullName: "",
+        bio: "",
+        profilePictureUrl: "",
+        location: "",
+        currentSkills: [],
+        socialLinks: {},
+        followers: [],
+        following: [],
+        badges: {},
+        roles: [],
+        enabled: true,
+        createdAt: new Date(),
+        updatedAt: ""
       });
       // Closing the modal
       onClose();
