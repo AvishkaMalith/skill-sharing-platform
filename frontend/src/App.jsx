@@ -68,8 +68,23 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
-                <Route path="/post/:postId" element={<ViewPost />} />
-                <Route path="/wall" element={<PostWall />} />
+
+                <Route
+                    path="/post/:postId"
+                    element={
+                        <ProtectedRoute isAuthenticated={isAuthenticated}>
+                            <ViewPost />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/wall"
+                    element={
+                        <ProtectedRoute isAuthenticated={isAuthenticated}>
+                            <PostWall />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route
                     path="/manage"
                     element={

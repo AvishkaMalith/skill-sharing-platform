@@ -21,7 +21,7 @@ function NavBar() {
     { name: 'Instructors', href: '/instructors', icon: Users },
     { name: 'About', href: '/about', icon: Info },
     { name: 'Create Post', href: '/create-post', icon: PenSquare },
-    { name: 'View Post', href: '/view-post', icon: Eye },
+    { name: 'Community', href: '/wall', icon: Eye },
   ];
 
   const [menuOpen, setMenuOpen] = useState(false);
