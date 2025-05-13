@@ -13,8 +13,6 @@ import ManagePost from './pages/ManagePost';
 import EditPost from './pages/EditPost';
 import LearningGoals from './pages/LearningGoals';
 import LearningGoalDetail from './pages/LearningGoalDetail';
-import UserProfile from './pages/UserProfile';
-
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -41,44 +39,88 @@ function App() {
     }
 
     return (
-      <Router>
-        <Navbar 
-          isAuthenticated={isAuthenticated} 
-          setIsAuthenticated={setIsAuthenticated}
-        />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={
-            isAuthenticated ? <Navigate to="/dashboard" /> : <Login />
-          } />
-          <Route path="/dashboard" element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <Dashboard/>
-            </ProtectedRoute>
-          } />
-          <Route path="/user-profile" element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <UserProfile/>
-            </ProtectedRoute>
-          } />
-          <Route path="/learning-goals" element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <LearningGoals/>
-            </ProtectedRoute>
-          } />
-          <Route path="/learning-goals/:id" element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <LearningGoalDetail/>
-            </ProtectedRoute>
-          } />
-          <Route path="/create-post" element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <div>Create Post</div>
-              <CreatePost/>
-            </ProtectedRoute>
-          } />
-        </Routes>
-      </Router>
+        <Router>
+            <Navbar
+                isAuthenticated={isAuthenticated}
+                setIsAuthenticated={setIsAuthenticated}
+            />
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route
+                    path="/login"
+                    element={
+                        isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />
+                    }
+                />
+                <Route
+                    path="/dashboard"
+                    element={
+                        <ProtectedRoute isAuthenticated={isAuthenticated}>
+                            <Dashboard />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/create-post"
+                    element={
+                        <ProtectedRoute isAuthenticated={isAuthenticated}>
+                            <CreatePost />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/post/:postId"
+                    element={
+                        <ProtectedRoute isAuthenticated={isAuthenticated}>
+                            <ViewPost />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/wall"
+                    element={
+                        <ProtectedRoute isAuthenticated={isAuthenticated}>
+                            <PostWall />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/manage"
+                    element={
+                        <ProtectedRoute isAuthenticated={isAuthenticated}>
+                            <ManagePost />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/edit/:postId"
+                    element={
+                        <ProtectedRoute isAuthenticated={isAuthenticated}>
+                            <EditPost />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/learning-goals"
+                    element={
+                        <ProtectedRoute isAuthenticated={isAuthenticated}>
+                            <LearningGoals />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/learning-goals/:id"
+                    element={
+                        <ProtectedRoute isAuthenticated={isAuthenticated}>
+                            <LearningGoalDetail />
+                        </ProtectedRoute>
+                    }
+                />
+                {/* Redirect unknown routes to home or a 404 page */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        </Router>
     );
 }
 
