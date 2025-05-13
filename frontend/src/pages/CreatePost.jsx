@@ -151,8 +151,13 @@ const CreatePost = () => {
                             <JoditEditor
                                 value={content}
                                 config={config}
+<<<<<<< Updated upstream
                                 onBlur={(newContent) => setContent(newContent)}
                                 onChange={() => {}}
+=======
+                                onBlur={(newContent) => setContent(newContent)} // Update content on blur for better performance
+                                onChange={() => { }} // Empty onChange to prevent unnecessary re-renders
+>>>>>>> Stashed changes
                             />
                         </div>
 
@@ -189,9 +194,8 @@ const CreatePost = () => {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className={`w-full px-6 py-3 text-white rounded-md shadow transition ${
-                                    isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-                                }`}
+                                className={`w-full px-6 py-3 text-white rounded-md shadow transition ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                                    }`}
                             >
                                 {isLoading ? 'Creating...' : 'Create Post'}
                             </button>

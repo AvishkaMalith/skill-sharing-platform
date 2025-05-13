@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -6,6 +6,7 @@ const API_BASE_URL = 'http://localhost:8080/api/users';
 
 const UserProfile = () => {
   const { state } = useLocation();
+  const navigate = useNavigate();
   const userId = state?.userId;
 
   const [userProfile, setUserProfile] = useState(null);
@@ -13,6 +14,7 @@ const UserProfile = () => {
   const [editMode, setEditMode] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -20,7 +22,7 @@ const UserProfile = () => {
       const fetchUserProfile = async () => {
         setIsFetching(true);
         try {
-          const response = await axios.get(`http://localhost:8080/api/users/get/${userId}`);
+          const response = await axios.get(`${API_BASE_URL}/get/${userId}`);
           setUserProfile(response.data);
           setFormData(response.data);
         } catch (err) {
@@ -51,16 +53,34 @@ const UserProfile = () => {
   const handleSave = async () => {
     setIsUpdating(true);
     try {
-      const response = await axios.put(`http://localhost:8080/api/users/update`, {
+      const response = await axios.put(`${API_BASE_URL}/update`, {
         ...formData,
         updatedAt: new Date().toISOString(),
       });
       setUserProfile(response.data);
       setEditMode(false);
     } catch (err) {
-      setError(err.message || 'Failed to fetch user profile');
+      setError(err.message || 'Failed to update user profile');
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this account? This action cannot be undone.'
+    );
+    if (!confirmed) return;
+
+    setIsDeleting(true);
+    try {
+      await axios.delete(`${API_BASE_URL}/delete/${userId}`);
+      alert('User account deleted successfully.');
+      navigate('/'); // Redirect to homepage
+    } catch (err) {
+      setError(err.message || 'Failed to delete user account');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -77,12 +97,21 @@ const UserProfile = () => {
       <div className="bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-8 p-6">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold text-gray-800">User Profile</h1>
-          <button
-            onClick={() => setEditMode((prev) => !prev)}
-            className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded"
-          >
-            {editMode ? 'Cancel' : 'Edit'}
-          </button>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setEditMode((prev) => !prev)}
+              className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded"
+            >
+              {editMode ? 'Cancel' : 'Edit'}
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="text-white bg-red-500 hover:bg-red-600 px-4 py-2 rounded"
+            >
+              {isDeleting ? 'Deleting...' : 'Delete Account'}
+            </button>
+          </div>
         </div>
 
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}

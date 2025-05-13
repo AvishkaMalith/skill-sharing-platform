@@ -7,6 +7,24 @@ const Login = ({ onLoginSuccess }) => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const handleFacebookLogin = async () => {
+    setError(null);
+    try {
+      const loginResponse = await auth.getFacebookLoginUrl();
+      const loginUrl = loginResponse.data.loginUrl;
+      if (loginUrl) {
+        window.location.href = loginUrl;
+      } else {
+        setError('Facebook login URL not found.');
+        console.error('Facebook login URL not found in response:', loginResponse);
+      }
+    } catch (err) {
+      setError('Failed to connect to the server. Please try again later.');
+      console.error('Facebook login error:', err);
+    }
+  };
+
+
   const handleGoogleLogin = async () => {
     setError(null);
     try {
@@ -31,18 +49,31 @@ const Login = ({ onLoginSuccess }) => {
         <h1>Skill Sharing Platform</h1>
         <p>Connect, learn, and share your skills with others</p>
         {error && <div className="error-message">{error}</div>}
-        <button 
-          className="google-login-button" 
+        <button
+          className="google-login-button"
           onClick={handleGoogleLogin}
           aria-label="Sign in with Google"
           title="Sign in with Google"
         >
-          <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" 
-            alt="Google logo" 
-            className="google-icon" 
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+            alt="Google logo"
+            className="google-icon"
           />
           Sign in with Google
+        </button>
+        <button
+          className="google-login-button"
+          onClick={handleFacebookLogin}
+          aria-label="Sign in with Facebook"
+          title="Sign in with Facebook"
+        >
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+            alt="Google logo"
+            className="google-icon"
+          />
+          Sign in with Facebook
         </button>
       </div>
     </div>
