@@ -5,8 +5,6 @@ import com.skill_share_platform.DataTransferObject.PostDataTransferObject;
 import com.skill_share_platform.Model.PostModel;
 import com.skill_share_platform.Service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +22,12 @@ public class PostController {
     @ResponseStatus(HttpStatus.OK)
     public List<PostModel> getPosts() {
         return postService.getPosts();
+    }
+
+    @GetMapping("/get/by-user/{publisherId}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<PostModel> getPostsByPublisherId(@PathVariable String publisherId) {
+        return postService.getPostsByPublisherId(publisherId);
     }
 
     @GetMapping("/get/{postId}")

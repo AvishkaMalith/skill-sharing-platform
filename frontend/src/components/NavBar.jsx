@@ -12,8 +12,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import LogInForm from './LogInForm';
-import SignUpForm from './SignUpForm';
+
 
 function NavBar() {
   const navLinks = [
@@ -22,7 +21,7 @@ function NavBar() {
     { name: 'Instructors', href: '/instructors', icon: Users },
     { name: 'About', href: '/about', icon: Info },
     { name: 'Create Post', href: '/create-post', icon: PenSquare },
-    { name: 'View Post', href: '/view-post', icon: Eye },
+    { name: 'Community', href: '/wall', icon: Eye },
   ];
 
   const [menuOpen, setMenuOpen] = useState(false);
