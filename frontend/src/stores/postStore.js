@@ -6,51 +6,66 @@ const usePostStore = create((set) => ({
     videos: [],
     publisherName: '',
     publisherId: '',
+    postTitle: '',
+    postCategory: '',
     isLoading: false,
     error: null,
     success: null,
-
     setContent: (content) => set({ content }),
     setImages: (images) => set({ images }),
     setVideos: (videos) => set({ videos }),
     setPublisherName: (publisherName) => set({ publisherName }),
     setPublisherId: (publisherId) => set({ publisherId }),
-
-    createPost: async () => {
+    setPostTitle: (postTitle) => set({ postTitle }),
+    setPostCategory: (postCategory) => set({ postCategory }),
+    createPost: async (formData) => {
         set({ isLoading: true, error: null, success: null });
         try {
-            const postData = {
-                publisherName: usePostStore.getState().publisherName,
-                publisherId: usePostStore.getState().publisherId,
-                content: usePostStore.getState().content,
-                images: usePostStore.getState().images,
-                videos: usePostStore.getState().videos,
-            };
-
             const response = await fetch('http://localhost:8080/api/posts/create', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(postData),
+                body: formData,
             });
-
-            const result = await response.json();
+            const data = await response.json();
             if (response.ok) {
-                set({ success: result.message, isLoading: false }); // Use result.message for the success message
-                // Reset form after successful submission
-                set({
-                    content: '',
-                    images: [],
-                    videos: [],
-                    publisherName: '',
-                    publisherId: '',
-                });
+                set({ success: data.message, isLoading: false });
             } else {
-                throw new Error(result.message || 'Failed to create post');
+                set({ error: data.message || 'Failed to create post', isLoading: false });
             }
-        } catch (error) {
-            set({ error: error.message, isLoading: false });
+        } catch (err) {
+            set({ error: 'Error creating post', isLoading: false });
+        }
+    },
+    updatePost: async (postId, formData) => {
+        set({ isLoading: true, error: null, success: null });
+        try {
+            const response = await fetch(`http://localhost:8080/api/posts/update/${postId}`, {
+                method: 'PUT',
+                body: formData,
+            });
+            const data = await response.json();
+            if (response.ok) {
+                set({ success: data.message, isLoading: false });
+            } else {
+                set({ error: data.message || 'Failed to update post', isLoading: false });
+            }
+        } catch (err) {
+            set({ error: 'Error updating post', isLoading: false });
+        }
+    },
+    deletePost: async (postId) => {
+        set({ isLoading: true, error: null, success: null });
+        try {
+            const response = await fetch(`http://localhost:8080/api/posts/delete/${postId}`, {
+                method: 'DELETE',
+            });
+            const data = await response.json();
+            if (response.ok) {
+                set({ success: data.message, isLoading: false });
+            } else {
+                set({ error: data.message || 'Failed to delete post', isLoading: false });
+            }
+        } catch (err) {
+            set({ error: 'Error deleting post', isLoading: false });
         }
     },
 }));

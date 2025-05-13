@@ -2,11 +2,15 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useState, useEffect } from 'react';
 import { auth } from './services/api';
 import Home from './pages/Home';
-import Navbar from './components/Navbar'; 
+import Navbar from './components/NavBar.jsx';
 import CreatePost from './pages/CreatePost';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import ViewPost from './pages/ViewPost';
+import PostWall from './pages/PostWall';
+import ManagePost from './pages/ManagePost';
+import EditPost from './pages/EditPost';
 import LearningGoals from './pages/LearningGoals';
 import LearningGoalDetail from './pages/LearningGoalDetail';
 import UserProfile from './pages/UserProfile';
@@ -15,28 +19,27 @@ import UserProfile from './pages/UserProfile';
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
     const [loading, setLoading] = useState(true);
-  
+
     useEffect(() => {
-      // Check authentication status when app loads
-      const checkAuth = async () => {
-        try {
-          const response = await auth.getStatus();
-          setIsAuthenticated(response.data.isAuthenticated);
-        } catch (error) {
-          console.error('Auth check error:', error);
-          setIsAuthenticated(false);
-        } finally {
-          setLoading(false);
-        }
-      };
-  
-      checkAuth();
+        const checkAuth = async () => {
+            try {
+                const response = await auth.getStatus();
+                setIsAuthenticated(response.data.isAuthenticated);
+            } catch (error) {
+                console.error('Auth check error:', error);
+                setIsAuthenticated(false);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        checkAuth();
     }, []);
-  
+
     if (loading) {
-      return <div className="loading-app">Loading application...</div>;
+        return <div className="loading-app">Loading application...</div>;
     }
-  
+
     return (
       <Router>
         <Navbar 
@@ -77,13 +80,6 @@ function App() {
         </Routes>
       </Router>
     );
-  }
-  
-  export default App;
+}
 
-
-
-
-
-
-
+export default App;

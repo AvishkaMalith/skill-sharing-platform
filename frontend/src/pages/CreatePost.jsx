@@ -1,30 +1,44 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import JoditEditor from 'jodit-react';
-import Footer from '../components/Footer';
 import usePostStore from '../stores/postStore';
+import Footer from '../components/Footer';
+import Cookies from 'js-cookie';
 
 const CreatePost = () => {
     const {
         content,
+        setContent,
         images,
+        setImages,
         videos,
+        setVideos,
         publisherName,
+        setPublisherName,
         publisherId,
+        setPublisherId,
+        postTitle,
+        setPostTitle,
+        postCategory,
+        setPostCategory,
         isLoading,
         error,
         success,
-        setContent,
-        setImages,
-        setVideos,
-        setPublisherName,
-        setPublisherId,
         createPost,
     } = usePostStore();
 
-    const [imageInput, setImageInput] = useState('');
-    const [videoInput, setVideoInput] = useState('');
+    // Fetch userId and userName from cookies on mount
+    useEffect(() => {
+        const userId = Cookies.get('userId');
+        const userName = Cookies.get('userName');
+        if (userId && userName) {
+            setPublisherId(userId);
+            setPublisherName(userName);
+        } else {
+            console.warn('Cookies not found: userId or userName missing');
+        }
+    }, [setPublisherId, setPublisherName]);
 
-    // Memoize the Jodit Editor configuration to prevent focus issues
+    // JoditEditor config
     const config = useMemo(
         () => ({
             readonly: false,
@@ -40,71 +54,89 @@ const CreatePost = () => {
                 'hr', 'eraser', 'fullsize',
             ],
             uploader: {
-                insertImageAsBase64URI: true, // For testing, use base64; later, configure for file uploads
+                insertImageAsBase64URI: true,
             },
         }),
         []
     );
 
-    const handleAddImage = () => {
-        if (imageInput.trim()) {
-            setImages([...images, imageInput.trim()]);
-            setImageInput('');
-        }
-    };
-
-    const handleAddVideo = () => {
-        if (videoInput.trim()) {
-            setVideos([...videos, videoInput.trim()]);
-            setVideoInput('');
-        }
-    };
-
+    // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await createPost();
+        if (!publisherId || !publisherName) {
+            usePostStore.setState({ error: 'Please log in to create a post' });
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('publisherName', publisherName);
+        formData.append('publisherId', publisherId);
+        formData.append('postTitle', postTitle);
+        formData.append('content', content);
+        formData.append('postCategory', postCategory);
+        images.forEach((file) => formData.append('imageFiles', file));
+        videos.forEach((file) => formData.append('videoFiles', file));
+
+        await createPost(formData);
+    };
+
+    // Handle file uploads
+    const handleImageUpload = (e) => {
+        setImages([...e.target.files]);
+    };
+
+    const handleVideoUpload = (e) => {
+        setVideos([...e.target.files]);
     };
 
     return (
         <>
-            <div className="min-h-screen bg-gray-100 flex justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-3xl w-full bg-white p-8 rounded-lg shadow-lg">
+
+            <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg">
                     <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
                         Create a New Post
                     </h2>
 
-                    <div className="space-y-6">
-                        {/* Publisher Name */}
+                    <form onSubmit={handleSubmit} className="space-y-6">
+
+                        <p className="text-gray-600 mb-4">Posting as: {publisherName}</p>
+                        {/* Post Title */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">
-                                Publisher Name
+                                Post Title
                             </label>
                             <input
                                 type="text"
-                                value={publisherName}
-                                onChange={(e) => setPublisherName(e.target.value)}
+                                value={postTitle}
+                                onChange={(e) => setPostTitle(e.target.value)}
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Enter your name"
+                                placeholder="Enter post title"
                                 required
                             />
                         </div>
 
-                        {/* Publisher ID */}
+                        {/* Post Category Dropdown */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">
-                                Publisher ID
+                                Post Category
                             </label>
-                            <input
-                                type="text"
-                                value={publisherId}
-                                onChange={(e) => setPublisherId(e.target.value)}
+                            <select
+                                value={postCategory}
+                                onChange={(e) => setPostCategory(e.target.value)}
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Enter your ID"
                                 required
-                            />
+                            >
+                                <option value="" disabled>Select a category</option>
+                                <option value="Programming">Programming</option>
+                                <option value="Design">Design</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Business">Business</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
 
-                        {/* Post Content (Jodit Editor) */}
+                        {/* Post Content */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">
                                 Post Content
@@ -112,77 +144,43 @@ const CreatePost = () => {
                             <JoditEditor
                                 value={content}
                                 config={config}
-                                onBlur={(newContent) => setContent(newContent)} // Update content on blur for better performance
-                                onChange={() => {}} // Empty onChange to prevent unnecessary re-renders
+                                onBlur={(newContent) => setContent(newContent)}
+                                onChange={() => {}}
                             />
                         </div>
 
                         {/* Images */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">
-                                Images (Enter file paths for now)
+                                Upload Images
                             </label>
-                            <div className="flex items-center space-x-4 mt-1">
-                                <input
-                                    type="text"
-                                    value={imageInput}
-                                    onChange={(e) => setImageInput(e.target.value)}
-                                    className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="e.g., uploads/images/image1.jpg"
-                                />
-                                <button
-                                    onClick={handleAddImage}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                                >
-                                    Add Image
-                                </button>
-                            </div>
-                            {images.length > 0 && (
-                                <ul className="mt-2 space-y-1">
-                                    {images.map((img, index) => (
-                                        <li key={index} className="text-sm text-gray-600">
-                                            {img}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
+                            <input
+                                type="file"
+                                multiple
+                                onChange={handleImageUpload}
+                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                accept="image/*"
+                            />
                         </div>
 
                         {/* Videos */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">
-                                Videos (Enter file paths for now)
+                                Upload Videos
                             </label>
-                            <div className="flex items-center space-x-4 mt-1">
-                                <input
-                                    type="text"
-                                    value={videoInput}
-                                    onChange={(e) => setVideoInput(e.target.value)}
-                                    className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="e.g., uploads/videos/video1.mp4"
-                                />
-                                <button
-                                    onClick={handleAddVideo}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                                >
-                                    Add Video
-                                </button>
-                            </div>
-                            {videos.length > 0 && (
-                                <ul className="mt-2 space-y-1">
-                                    {videos.map((vid, index) => (
-                                        <li key={index} className="text-sm text-gray-600">
-                                            {vid}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
+                            <input
+                                type="file"
+                                multiple
+                                onChange={handleVideoUpload}
+                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                accept="video/*"
+                            />
                         </div>
 
                         {/* Submit Button */}
                         <div className="text-center">
                             <button
-                                onClick={handleSubmit}
+                                type="submit"
                                 disabled={isLoading}
                                 className={`w-full px-6 py-3 text-white rounded-md shadow transition ${
                                     isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
@@ -193,15 +191,9 @@ const CreatePost = () => {
                         </div>
 
                         {/* Feedback Messages */}
-                        {error && (
-                            <p className="text-red-500 text-center mt-4">{error}</p>
-                        )}
-                        {success && (
-                            <p className="text-green-500 text-center mt-4">
-                                Post created successfully! {success}
-                            </p>
-                        )}
-                    </div>
+                        {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+                        {success && <p className="text-green-500 text-center mt-4">{success}</p>}
+                    </form>
                 </div>
             </div>
             <Footer />
