@@ -33,6 +33,15 @@ public class PostService {
         }
     }
 
+    public List<PostModel> getPostsByPublisherId(String publisherId) {
+        try {
+            return postRepository.findByPublisherId(publisherId);
+        } catch (Exception e) {
+            System.out.println("Error fetching posts by publisher ID: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
     public PostModel getPostById(String postId) {
         try {
             Optional<PostModel> post = postRepository.findById(postId);
@@ -123,7 +132,7 @@ public class PostService {
             post.setPostCategory(postDataTransferObject.getPostCategory());
             post.setPublisherName(postDataTransferObject.getPublisherName());
             post.setPublisherId(postDataTransferObject.getPublisherId());
-            post.setPostTime(new Date()); // Update timestamp
+            post.setPostTime(new Date());
 
             Path uploadPath = Paths.get(UPLOAD_DIR).toAbsolutePath().normalize();
             Files.createDirectories(uploadPath);
@@ -177,7 +186,6 @@ public class PostService {
             PostModel post = postOpt.get();
             Path uploadPath = Paths.get(UPLOAD_DIR).toAbsolutePath().normalize();
 
-            // Delete associated files
             if (post.getImages() != null) {
                 for (String imagePath : post.getImages()) {
                     Path filePath = uploadPath.resolve(imagePath.replace("/uploads/", ""));
