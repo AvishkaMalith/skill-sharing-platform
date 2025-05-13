@@ -16,6 +16,7 @@ function LearningGoals() {
   const [categories, setCategories] = useState([]);
   const [userId, setUserId] = useState(null);
   const [userLoading, setUserLoading] = useState(true);
+  const [selectedStatus, setSelectedStatus] = useState('');
 
   // Fetch current user and then their learning goals
   useEffect(() => {
@@ -25,11 +26,9 @@ function LearningGoals() {
       try {
         const userRes = await userApi.getCurrent();
         const userData = userRes.data;
-        // Try common user id fields
         const id = userData.userId || userData.id || userData._id;
         if (!id) throw new Error('User ID not found in response');
         setUserId(id);
-        // Now fetch goals for this user
         setLoading(true);
         const response = await learningGoalsApi.getByUser(id);
         const data = response.data;
@@ -49,15 +48,44 @@ function LearningGoals() {
     fetchUserAndGoals();
   }, []);
 
+  // Fetch goals when status changes
+  useEffect(() => {
+    if (!userId) return;
+    const fetchGoals = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        let response;
+        if (selectedStatus && selectedStatus !== '') {
+          response = await learningGoalsApi.getByUserAndStatus(userId, selectedStatus);
+        } else {
+          response = await learningGoalsApi.getByUser(userId);
+        }
+        const data = response.data;
+        if (Array.isArray(data)) {
+          setGoals(data);
+          const uniqueCategories = [...new Set(data.map(goal => goal.category))];
+          setCategories(uniqueCategories);
+        }
+      } catch (err) {
+        setError('Failed to fetch learning goals');
+        console.error('Error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGoals();
+  }, [userId, selectedStatus]);
+
   const handleCreateGoal = async (goalData) => {
     if (!userId) return;
     try {
+      const status = goalData.progress === 100 ? 'COMPLETED' : 'IN_PROGRESS';
       await learningGoalsApi.create({
         ...goalData,
         userId,
-        status: 'IN_PROGRESS',
+        status,
       });
-      // Refresh goals list
       const updated = await learningGoalsApi.getByUser(userId);
       setGoals(updated.data);
       setShowForm(false);
@@ -72,7 +100,6 @@ function LearningGoals() {
     if (!window.confirm('Are you sure you want to delete this learning goal?')) return;
     try {
       await learningGoalsApi.delete(goalId);
-      // Refresh goals list
       const updated = await learningGoalsApi.getByUser(userId);
       setGoals(updated.data);
     } catch (err) {
@@ -82,10 +109,11 @@ function LearningGoals() {
   };
 
   const filteredGoals = goals.filter(goal => {
-    const matchesSearch = goal.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      goal.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = !searchTerm || (goal.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      goal.description.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = !selectedCategory || goal.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesStatus = !selectedStatus || goal.status === selectedStatus;
+    return matchesSearch && matchesCategory && matchesStatus;
   });
 
   return (
@@ -104,7 +132,7 @@ function LearningGoals() {
         </div>
 
         <div className="mb-8 flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
+          <div className="relative flex-1">
             <Search
               size={20}
               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -114,11 +142,11 @@ function LearningGoals() {
               placeholder="Search goals..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="pl-10 pr-4 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               disabled={userLoading || loading}
             />
           </div>
-          <div className="sm:w-64">
+          <div className="flex-1">
             <div className="relative">
               <Filter
                 size={20}
@@ -127,7 +155,7 @@ function LearningGoals() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="pl-10 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="pl-10 pr-4 py-2 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 disabled={userLoading || loading}
               >
                 <option value="">All Categories</option>
@@ -138,6 +166,26 @@ function LearningGoals() {
                 ))}
               </select>
             </div>
+          </div>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setSelectedStatus('')}
+              className={`px-4 py-2 rounded-md ${selectedStatus === '' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            >
+              All Statuses
+            </button>
+            <button
+              onClick={() => setSelectedStatus('IN_PROGRESS')}
+              className={`px-4 py-2 rounded-md ${selectedStatus === 'IN_PROGRESS' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            >
+              In Progress
+            </button>
+            <button
+              onClick={() => setSelectedStatus('COMPLETED')}
+              className={`px-4 py-2 rounded-md ${selectedStatus === 'COMPLETED' ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            >
+              Completed
+            </button>
           </div>
         </div>
 
@@ -209,4 +257,4 @@ function LearningGoals() {
   );
 }
 
-export default LearningGoals; 
+export default LearningGoals;
