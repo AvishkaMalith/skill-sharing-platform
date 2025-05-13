@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { MoreVertical, Edit2, Trash2, Send } from 'lucide-react';
+import { MoreVertical, Edit2, Trash2, Send, ChevronDown, ChevronUp } from 'lucide-react';
 import axios from 'axios';
 import { user as userApi } from '../services/api';
 
@@ -10,6 +10,7 @@ function CommentSection({ postId }) {
   const [editingContent, setEditingContent] = useState('');
   const [showMenuId, setShowMenuId] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(true);
   const commentsEndRef = useRef(null);
 
   useEffect(() => {
@@ -25,8 +26,10 @@ function CommentSection({ postId }) {
   }, [postId]);
 
   useEffect(() => {
-    commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [comments]);
+    if (isExpanded) {
+      commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [comments, isExpanded]);
 
   const fetchComments = async () => {
     try {
@@ -115,135 +118,158 @@ function CommentSection({ postId }) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-4">
-      <h3 className="text-lg font-semibold mb-4">Comments</h3>
+    <div className="bg-white rounded-lg shadow-sm">
+      <div 
+        className="p-4 border-b flex items-center justify-between cursor-pointer"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <h3 className="text-lg font-semibold">Comments ({comments.length})</h3>
+        <button className="p-1 hover:bg-gray-100 rounded-full">
+          {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        </button>
+      </div>
       
-      <div className="space-y-4 mb-6 max-h-[500px] overflow-y-auto">
-        {comments.map((comment) => (
-          <div key={comment.id} className="flex gap-3">
-            <div className="flex-shrink-0">
-              {comment.user?.profilePictureUrl ? (
-                <img
-                  src={comment.user.profilePictureUrl}
-                  alt={comment.user.fullName}
-                  className="w-8 h-8 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm">
-                  {getInitials(comment.user?.fullName)}
-                </div>
-              )}
-            </div>
-            
-            <div className="flex-1">
-              <div className="bg-gray-50 rounded-lg p-3">
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">
-                      {comment.user?.fullName || 'Unknown User'}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {formatDate(comment.createdAt)}
-                    </span>
-                    {comment.edited && (
-                      <span className="text-xs text-gray-500">(edited)</span>
-                    )}
-                  </div>
-                  
-                  {isCurrentUser(comment) && !editingId && (
-                    <div className="relative">
-                      <button
-                        onClick={() => setShowMenuId(showMenuId === comment.id ? null : comment.id)}
-                        className="p-1 hover:bg-gray-200 rounded-full"
-                      >
-                        <MoreVertical size={16} className="text-gray-500" />
-                      </button>
-                      
-                      {showMenuId === comment.id && (
-                        <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg py-1 z-10">
-                          <button
-                            onClick={() => handleEdit(comment)}
-                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                          >
-                            <Edit2 size={16} className="mr-2" />
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(comment.id)}
-                            className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                          >
-                            <Trash2 size={16} className="mr-2" />
-                            Delete
-                          </button>
-                        </div>
-                      )}
+      {isExpanded && (
+        <>
+          <div className="p-4 space-y-4 max-h-[calc(100vh-300px)] overflow-y-auto">
+            {comments.map((comment) => (
+              <div key={comment.id} className="flex gap-3">
+                <div className="flex-shrink-0">
+                  {comment.user?.profilePictureUrl ? (
+                    <img
+                      src={comment.user.profilePictureUrl}
+                      alt={comment.user.fullName}
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm">
+                      {getInitials(comment.user?.fullName)}
                     </div>
                   )}
                 </div>
                 
-                {editingId === comment.id ? (
-                  <div>
-                    <textarea
-                      className="w-full border rounded-lg p-2 text-sm"
-                      value={editingContent}
-                      onChange={(e) => setEditingContent(e.target.value)}
-                      rows={2}
-                    />
-                    <div className="flex gap-2 mt-2 justify-end">
-                      <button
-                        onClick={() => handleEditSubmit(comment.id)}
-                        className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={() => setEditingId(null)}
-                        className="text-sm bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300"
-                      >
-                        Cancel
-                      </button>
+                <div className="flex-1">
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-sm">
+                          {comment.user?.fullName || 'Unknown User'}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {formatDate(comment.createdAt)}
+                        </span>
+                        {comment.edited && (
+                          <span className="text-xs text-gray-500">(edited)</span>
+                        )}
+                      </div>
+                      
+                      {isCurrentUser(comment) && !editingId && (
+                        <div className="relative">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowMenuId(showMenuId === comment.id ? null : comment.id);
+                            }}
+                            className="p-1 hover:bg-gray-200 rounded-full"
+                          >
+                            <MoreVertical size={16} className="text-gray-500" />
+                          </button>
+                          
+                          {showMenuId === comment.id && (
+                            <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg py-1 z-10">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEdit(comment);
+                                }}
+                                className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                              >
+                                <Edit2 size={16} className="mr-2" />
+                                Edit
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(comment.id);
+                                }}
+                                className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                              >
+                                <Trash2 size={16} className="mr-2" />
+                                Delete
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
+                    
+                    {editingId === comment.id ? (
+                      <div>
+                        <textarea
+                          className="w-full border rounded-lg p-2 text-sm"
+                          value={editingContent}
+                          onChange={(e) => setEditingContent(e.target.value)}
+                          rows={2}
+                        />
+                        <div className="flex gap-2 mt-2 justify-end">
+                          <button
+                            onClick={() => handleEditSubmit(comment.id)}
+                            className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                          >
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingId(null)}
+                            className="text-sm bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-700 whitespace-pre-wrap break-words">
+                        {comment.content}
+                      </p>
+                    )}
                   </div>
-                ) : (
-                  <p className="text-sm text-gray-700 whitespace-pre-wrap break-words">
-                    {comment.content}
-                  </p>
-                )}
+                </div>
               </div>
-            </div>
+            ))}
+            <div ref={commentsEndRef} />
           </div>
-        ))}
-        <div ref={commentsEndRef} />
-      </div>
 
-      <form onSubmit={handleSubmit} className="flex gap-2">
-        {currentUser?.profilePictureUrl ? (
-          <img
-            src={currentUser.profilePictureUrl}
-            alt={currentUser.fullName}
-            className="w-8 h-8 rounded-full object-cover"
-          />
-        ) : (
-          <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm">
-            {getInitials(currentUser?.fullName)}
+          <div className="p-4 border-t">
+            <form onSubmit={handleSubmit} className="flex gap-2">
+              {currentUser?.profilePictureUrl ? (
+                <img
+                  src={currentUser.profilePictureUrl}
+                  alt={currentUser.fullName}
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm">
+                  {getInitials(currentUser?.fullName)}
+                </div>
+              )}
+              <div className="flex-1">
+                <textarea
+                  className="w-full border rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Write a comment..."
+                  rows={2}
+                />
+              </div>
+              <button
+                type="submit"
+                className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 self-end"
+              >
+                <Send size={20} />
+              </button>
+            </form>
           </div>
-        )}
-        <div className="flex-1">
-          <textarea
-            className="w-full border rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Write a comment..."
-            rows={2}
-          />
-        </div>
-        <button
-          type="submit"
-          className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 self-end"
-        >
-          <Send size={20} />
-        </button>
-      </form>
+        </>
+      )}
     </div>
   );
 }
