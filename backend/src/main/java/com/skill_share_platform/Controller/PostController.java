@@ -33,6 +33,7 @@ public class PostController {
     public ApiResponse createPost(
             @RequestParam("publisherName") String publisherName,
             @RequestParam("publisherId") String publisherId,
+            @RequestParam("postCategory") String postCategory,
             @RequestParam("postTitle") String postTitle,
             @RequestParam("content") String content,
             @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles,
@@ -41,6 +42,7 @@ public class PostController {
         PostDataTransferObject postData = new PostDataTransferObject();
         postData.setPublisherName(publisherName);
         postData.setPublisherId(publisherId);
+        postData.setPostCategory(postCategory);
         postData.setPostTitle(postTitle);
         postData.setContent(content);
         postData.setImageFiles(imageFiles);

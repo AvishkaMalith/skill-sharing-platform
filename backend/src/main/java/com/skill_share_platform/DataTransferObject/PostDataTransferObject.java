@@ -9,6 +9,7 @@ public class PostDataTransferObject {
     private Date postTime;
     private String publisherName;
     private String publisherId;
+    private String postCategory;
     private String postTitle;
     private String content;
     private List<String> images; // Store paths after upload
@@ -21,13 +22,14 @@ public class PostDataTransferObject {
     }
 
     // Parameterized constructor
-    public PostDataTransferObject(String postId, Date postTime, String publisherName, String publisherId, String postTitle,
+    public PostDataTransferObject(String postId, Date postTime, String publisherName, String publisherId,String postCategory, String postTitle,
                                   String content, List<String> images, List<String> videos, List<MultipartFile> imageFiles,
                                   List<MultipartFile> videoFiles) {
         this.postId = postId;
         this.postTime = postTime;
         this.publisherName = publisherName;
         this.publisherId = publisherId;
+        this.postCategory = postCategory;
         this.postTitle = postTitle;
         this.content = content;
         this.images = images;
@@ -45,6 +47,8 @@ public class PostDataTransferObject {
     public void setPublisherName(String publisherName) { this.publisherName = publisherName; }
     public String getPublisherId() { return publisherId; }
     public void setPublisherId(String publisherId) { this.publisherId = publisherId; }
+    public String getPostCategory() { return postCategory; }
+    public void setPostCategory(String postCategory) { this.postCategory = postCategory; }
     public String getPostTitle() { return postTitle; }
     public void setPostTitle(String postTitle) { this.postTitle = postTitle; }
     public String getContent() { return content; }

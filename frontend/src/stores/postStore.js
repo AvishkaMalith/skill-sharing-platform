@@ -5,6 +5,7 @@ const usePostStore = create((set) => ({
     images: [],
     videos: [],
     publisherName: '',
+    postCategory: '',
     publisherId: '',
     postTitle: '',
     isLoading: false,
@@ -17,6 +18,7 @@ const usePostStore = create((set) => ({
     setPostTitle: (postTitle) => set({ postTitle }),
     setPublisherName: (publisherName) => set({ publisherName }),
     setPublisherId: (publisherId) => set({ publisherId }),
+    setPostCategory: (postCategory) => set({ postCategory }),
 
     createPost: async (formData) => {
         set({ isLoading: true, error: null, success: null });
@@ -37,6 +39,7 @@ const usePostStore = create((set) => ({
                     postTitle: '',
                     publisherName: '',
                     publisherId: '',
+                    postCategory: '',
                 });
             } else {
                 throw new Error(result.message || 'Failed to create post');

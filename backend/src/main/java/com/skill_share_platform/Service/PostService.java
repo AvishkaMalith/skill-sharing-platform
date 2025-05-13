@@ -39,6 +39,9 @@ public class PostService {
             if (postDataTransferObject.getPublisherId() == null || postDataTransferObject.getPublisherId().isEmpty()) {
                 return new ApiResponse(false, "Publisher ID is required", null);
             }
+            if (postDataTransferObject.getPostCategory() == null || postDataTransferObject.getPostCategory().isEmpty()) {
+                return new ApiResponse(false, "Post Category is required", null);
+            }
             if (postDataTransferObject.getPostTitle() == null || postDataTransferObject.getPostTitle().isEmpty()) {
                 return new ApiResponse(false, "Post title is required", null);
             }
@@ -47,6 +50,7 @@ public class PostService {
             post.setPostTime(new Date());
             post.setPublisherName(postDataTransferObject.getPublisherName());
             post.setPublisherId(postDataTransferObject.getPublisherId());
+            post.setPostCategory(postDataTransferObject.getPostCategory());
             post.setPostTitle(postDataTransferObject.getPostTitle());
             post.setContent(postDataTransferObject.getContent());
 
@@ -120,6 +124,7 @@ public class PostService {
         try {
             if (postRepository.existsById(postDataTransferObject.getPostId())) {
                 PostModel existingPost = postRepository.findById(postDataTransferObject.getPostId()).get();
+                existingPost.setPostCategory(postDataTransferObject.getPostCategory());
                 existingPost.setPostTitle(postDataTransferObject.getPostTitle());
                 existingPost.setContent(postDataTransferObject.getContent());
                 existingPost.setImages(postDataTransferObject.getImages());

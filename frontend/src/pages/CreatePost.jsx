@@ -11,6 +11,7 @@ const CreatePost = () => {
         videos,
         publisherName,
         publisherId,
+        postCategory,
         postTitle,
         isLoading,
         error,
@@ -20,6 +21,7 @@ const CreatePost = () => {
         setVideos,
         setPublisherName,
         setPublisherId,
+        setPostCategory,
         setPostTitle,
         createPost,
     } = usePostStore();
@@ -62,6 +64,7 @@ const CreatePost = () => {
         const formData = new FormData();
         formData.append('publisherName', publisherName);
         formData.append('publisherId', publisherId);
+        formData.append('postCategory', postCategory);
         formData.append('postTitle', postTitle);
         formData.append('content', content);
         imageFiles.forEach((file) => formData.append('imageFiles', file));
@@ -106,6 +109,21 @@ const CreatePost = () => {
                                 onChange={(e) => setPublisherId(e.target.value)}
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="Enter your ID"
+                                required
+                            />
+                        </div>
+
+                        {/* Post Category */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Post Category
+                            </label>
+                            <input
+                                type="text"
+                                value={postCategory}
+                                onChange={(e) => setPostCategory(e.target.value)}
+                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Enter post category"
                                 required
                             />
                         </div>
