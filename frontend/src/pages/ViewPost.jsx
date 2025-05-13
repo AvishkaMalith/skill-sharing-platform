@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import CommentSection from '../components/CommentSection';
 
 import Footer from '../components/Footer';
 
@@ -15,39 +17,46 @@ const ViewPost = () => {
     useEffect(() => {
         const fetchPost = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/posts/get/${postId}`);
-                const data = await response.json();
-                if (response.ok) {
-                    // Prepend backend base URL to image and video paths
-                    const updatedPost = {
-                        ...data,
-                        images: data.images
-                            ? data.images.map((img) => `${BACKEND_BASE_URL}${img}`)
-                            : [],
-                        videos: data.videos
-                            ? data.videos.map((vid) => `${BACKEND_BASE_URL}${vid}`)
-                            : [],
-                    };
-                    setPost(updatedPost);
-                } else {
-                    setError('Post not found');
-                }
-            } catch (err) {
-                setError('Error fetching post');
+                const response = await axios.get(`/api/posts/get/${postId}`);
+                setPost(response.data);
+            } catch (error) {
+                setError('Failed to load post');
+                console.error('Error fetching post:', error);
             } finally {
                 setLoading(false);
             }
         };
+
         fetchPost();
     }, [postId]);
 
-    if (loading) return <p className="text-center mt-10">Loading...</p>;
-    if (error) return <p className="text-red-500 text-center mt-10">{error}</p>;
-    if (!post) return <p className="text-center mt-10">No post available</p>;
+    if (loading) {
+        return (
+            <div className="max-w-4xl mx-auto py-8 px-4">
+                <div className="animate-pulse">
+                    <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
+                    <div className="h-64 bg-gray-200 rounded mb-8"></div>
+                    <div className="space-y-4">
+                        <div className="h-4 bg-gray-200 rounded w-full"></div>
+                        <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                        <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error || !post) {
+        return (
+            <div className="max-w-4xl mx-auto py-8 px-4">
+                <div className="text-red-500">{error || 'Post not found'}</div>
+            </div>
+        );
+    }
 
     return (
         <>
-
             <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
                     <h1 className="text-4xl font-bold text-gray-900 mb-4">{post.postTitle}</h1>
@@ -91,6 +100,9 @@ const ViewPost = () => {
                         </div>
                     )}
                 </div>
+            </div>
+            <div className="mt-8">
+                <CommentSection postId={postId} />
             </div>
             <Footer />
         </>

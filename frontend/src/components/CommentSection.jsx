@@ -1,226 +1,251 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { MoreVertical, Edit2, Trash2, Send } from 'lucide-react';
 import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
+import { user as userApi } from '../services/api';
 
-const CommentSection = ({ postId, publisherId }) => {
+function CommentSection({ postId }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
-  const [editingCommentId, setEditingCommentId] = useState(null);
-  const [editedContent, setEditedContent] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const currentUserId = 'user1';
+  const [editingId, setEditingId] = useState(null);
+  const [editingContent, setEditingContent] = useState('');
+  const [showMenuId, setShowMenuId] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+  const commentsEndRef = useRef(null);
 
   useEffect(() => {
-    console.log('CommentSection props:', { postId, publisherId });
-    if (!postId) {
-      setError('Invalid postId');
-      console.warn('No postId provided:', postId);
-      return;
-    }
+    const fetchUser = async () => {
+      const res = await userApi.getCurrent();
+      setCurrentUser(res.data);
+    };
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
     fetchComments();
   }, [postId]);
 
+  useEffect(() => {
+    commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [comments]);
+
   const fetchComments = async () => {
     try {
-      setLoading(true);
-      const response = await axios.get(`http://localhost:8080/api/comments/get?postId=${postId}`);
-      console.log('Fetch comments response:', response.data);
-      if (!Array.isArray(response.data)) {
-        console.warn('Invalid comments data:', response.data);
-        setError('Invalid comments data from server');
-        setComments([]);
-      } else {
-        setComments(response.data);
-      }
-    } catch (err) {
-      setError('Failed to fetch comments: ' + err.message);
-      console.error('Fetch comments error:', err);
-      setComments([]);
-    } finally {
-      setLoading(false);
+      const response = await axios.get(`/api/comments/post/${postId}`);
+      setComments(response.data);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
     }
   };
 
-  const handleAddComment = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!newComment.trim()) return;
+    if (!newComment.trim() || !currentUser) return;
 
     try {
-      setLoading(true);
-      const commentData = {
+      await axios.post('/api/comments', {
         postId,
-        userId: currentUserId,
-        content: newComment,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      console.log('Sending comment data for postId', postId, ':', commentData);
-      await axios.post('http://localhost:8080/api/comments/create', commentData);
+        userId: currentUser.userId || currentUser.id || currentUser._id,
+        content: newComment
+      });
       setNewComment('');
       fetchComments();
-    } catch (err) {
-      setError('Failed to add comment');
-      console.error('Add comment error for postId', postId, ':', err.message);
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error('Error posting comment:', error);
     }
   };
 
-  const handleDeleteComment = async (commentId) => {
+  const handleEdit = (comment) => {
+    setEditingId(comment.id);
+    setEditingContent(comment.content);
+    setShowMenuId(null);
+  };
+
+  const handleEditSubmit = async (commentId) => {
     try {
-      setLoading(true);
-      setComments(comments.filter((comment) => comment.commentId !== commentId));
-      const response = await axios.delete(`http://localhost:8080/api/comments/delete/${commentId}`);
-      console.log('Delete response:', response.data);
+      await axios.put(`/api/comments/${commentId}`, {
+        userId: currentUser.userId || currentUser.id || currentUser._id,
+        content: editingContent
+      });
+      setEditingId(null);
+      setEditingContent('');
       fetchComments();
-    } catch (err) {
-      const message = err.response?.status === 404 ? 'Comment not found' : 'Unable to delete comment. Please try again.';
-      setError(message);
-      console.error('Delete comment error:', err);
-      fetchComments();
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error('Error updating comment:', error);
     }
   };
 
-  const handleEditComment = (comment) => {
-    setEditingCommentId(comment.commentId);
-    setEditedContent(comment.content);
-  };
-
-  const handleUpdateComment = async (commentId) => {
-    if (!editedContent.trim()) {
-      setError('Comment content cannot be empty');
-      return;
-    }
+  const handleDelete = async (commentId) => {
+    if (!window.confirm('Are you sure you want to delete this comment?')) return;
 
     try {
-      setLoading(true);
-      const updatedComment = {
-        content: editedContent,
-        updatedAt: new Date().toISOString(),
-      };
-      console.log('Updating comment with ID:', commentId, updatedComment);
-      const response = await axios.put(`http://localhost:8080/api/comments/update/${commentId}`, updatedComment);
-      console.log('Update response:', response.data);
-      setEditingCommentId(null);
-      setEditedContent('');
+      await axios.delete(`/api/comments/${commentId}?userId=${currentUser.userId || currentUser.id || currentUser._id}`);
       fetchComments();
-    } catch (err) {
-      const message = err.response?.status === 404 ? 'Comment not found' : 'Unable to update comment. Please try again.';
-      setError(message);
-      console.error('Update comment error:', err);
-      fetchComments();
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error('Error deleting comment:', error);
     }
   };
 
-  const handleCancelEdit = () => {
-    setEditingCommentId(null);
-    setEditedContent('');
-    setError(null);
+  const isCurrentUser = (comment) => {
+    return currentUser && (comment.user?.userId === currentUser.userId || 
+                          comment.user?.userId === currentUser.id || 
+                          comment.user?.userId === currentUser._id);
   };
 
-  const canEditComment = (commentUserId) => {
-    console.log('Checking edit permission:', { currentUserId, commentUserId, publisherId });
-    return currentUserId && (currentUserId === commentUserId || currentUserId === publisherId);
+  const getInitials = (name) => {
+    if (!name) return '?';
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+
+    if (diffInSeconds < 60) return 'just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    
+    return date.toLocaleDateString();
   };
 
   return (
-    <div className="mt-6 p-6 border-t border-gray-200">
+    <div className="bg-white rounded-lg shadow-sm p-4">
       <h3 className="text-lg font-semibold mb-4">Comments</h3>
-      {error && <div className="text-red-500 mb-4">{error}</div>}
-      <form onSubmit={handleAddComment} className="flex flex-row items-center gap-2 mb-6">
-        <textarea
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Add a comment..."
-          disabled={loading}
-          className="flex-1 h-12 p-3 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          type="submit"
-          disabled={loading || !newComment.trim()}
-          className="h-12 w-12 flex items-center justify-center bg-blue-600 text-white rounded-xl disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 transition"
-        >
-          <FontAwesomeIcon icon={faPaperPlane} />
-        </button>
-      </form>
-      {loading && comments.length === 0 ? (
-        <div className="text-gray-500">Loading comments...</div>
-      ) : comments.length === 0 ? (
-        <div className="text-gray-500">No comments yet</div>
-      ) : (
-        <div className="flex flex-col gap-4">
-          {comments.map((comment, index) => (
-            <div
-              key={comment.commentId || index}
-              className="bg-white p-4 rounded-lg shadow-md border border-gray-200"
-            >
-              <div className="flex justify-between mb-2 text-sm text-gray-600">
-                <div className="flex items-center gap-2">
-                  <span>User {comment.userId}</span>
-                  {canEditComment(comment.userId) && (
-                    <>
-                      <button
-                        onClick={() => handleEditComment(comment)}
-                        className="text-blue-500 hover:text-blue-700 transition"
-                        title="Edit comment"
-                        disabled={loading}
-                      >
-                        <FontAwesomeIcon icon={faEdit} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteComment(comment.commentId)}
-                        className="text-red-500 hover:text-red-700 transition"
-                        title="Delete comment"
-                        disabled={loading}
-                      >
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
-                    </>
-                  )}
-                </div>
-                <span>{new Date(comment.createdAt).toLocaleString()}</span>
-              </div>
-              {editingCommentId === comment.commentId ? (
-                <div className="flex flex-col gap-2">
-                  <textarea
-                    value={editedContent}
-                    onChange={(e) => setEditedContent(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows="3"
-                    disabled={loading}
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleUpdateComment(comment.commentId)}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700 transition"
-                      disabled={loading || !editedContent.trim()}
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={handleCancelEdit}
-                      className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition"
-                      disabled={loading}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
+      
+      <div className="space-y-4 mb-6 max-h-[500px] overflow-y-auto">
+        {comments.map((comment) => (
+          <div key={comment.id} className="flex gap-3">
+            <div className="flex-shrink-0">
+              {comment.user?.profilePictureUrl ? (
+                <img
+                  src={comment.user.profilePictureUrl}
+                  alt={comment.user.fullName}
+                  className="w-8 h-8 rounded-full object-cover"
+                />
               ) : (
-                <div className="leading-relaxed">{comment.content}</div>
+                <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm">
+                  {getInitials(comment.user?.fullName)}
+                </div>
               )}
             </div>
-          ))}
+            
+            <div className="flex-1">
+              <div className="bg-gray-50 rounded-lg p-3">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-sm">
+                      {comment.user?.fullName || 'Unknown User'}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {formatDate(comment.createdAt)}
+                    </span>
+                    {comment.edited && (
+                      <span className="text-xs text-gray-500">(edited)</span>
+                    )}
+                  </div>
+                  
+                  {isCurrentUser(comment) && !editingId && (
+                    <div className="relative">
+                      <button
+                        onClick={() => setShowMenuId(showMenuId === comment.id ? null : comment.id)}
+                        className="p-1 hover:bg-gray-200 rounded-full"
+                      >
+                        <MoreVertical size={16} className="text-gray-500" />
+                      </button>
+                      
+                      {showMenuId === comment.id && (
+                        <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg py-1 z-10">
+                          <button
+                            onClick={() => handleEdit(comment)}
+                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          >
+                            <Edit2 size={16} className="mr-2" />
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(comment.id)}
+                            className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                          >
+                            <Trash2 size={16} className="mr-2" />
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                
+                {editingId === comment.id ? (
+                  <div>
+                    <textarea
+                      className="w-full border rounded-lg p-2 text-sm"
+                      value={editingContent}
+                      onChange={(e) => setEditingContent(e.target.value)}
+                      rows={2}
+                    />
+                    <div className="flex gap-2 mt-2 justify-end">
+                      <button
+                        onClick={() => handleEditSubmit(comment.id)}
+                        className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditingId(null)}
+                        className="text-sm bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap break-words">
+                    {comment.content}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+        <div ref={commentsEndRef} />
+      </div>
+
+      <form onSubmit={handleSubmit} className="flex gap-2">
+        {currentUser?.profilePictureUrl ? (
+          <img
+            src={currentUser.profilePictureUrl}
+            alt={currentUser.fullName}
+            className="w-8 h-8 rounded-full object-cover"
+          />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm">
+            {getInitials(currentUser?.fullName)}
+          </div>
+        )}
+        <div className="flex-1">
+          <textarea
+            className="w-full border rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Write a comment..."
+            rows={2}
+          />
         </div>
-      )}
+        <button
+          type="submit"
+          className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 self-end"
+        >
+          <Send size={20} />
+        </button>
+      </form>
     </div>
   );
-};
+}
 
 export default CommentSection;
