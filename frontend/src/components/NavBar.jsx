@@ -9,6 +9,7 @@ import {
   LogIn,
   Rocket,
   PenSquare,
+  Eye,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import LogInForm from './LogInForm';
@@ -21,6 +22,7 @@ function NavBar() {
     { name: 'Instructors', href: '/instructors', icon: Users },
     { name: 'About', href: '/about', icon: Info },
     { name: 'Create Post', href: '/create-post', icon: PenSquare },
+    { name: 'View Post', href: '/view-post', icon: Eye },
   ];
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -37,10 +39,10 @@ function NavBar() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-16 items-center">
               <div className="flex items-center">
-              <span className="text-3xl font-bold text-blue-500">
-                Skill
-                <span className="text-black">Era</span>
-              </span>
+                            <span className="text-3xl font-bold text-blue-500">
+                                Skill
+                                <span className="text-black">Era</span>
+                            </span>
               </div>
 
               <div className="sm:hidden">

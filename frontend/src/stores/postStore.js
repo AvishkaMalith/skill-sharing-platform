@@ -18,29 +18,17 @@ const usePostStore = create((set) => ({
     setPublisherName: (publisherName) => set({ publisherName }),
     setPublisherId: (publisherId) => set({ publisherId }),
 
-    createPost: async () => {
+    createPost: async (formData) => {
         set({ isLoading: true, error: null, success: null });
         try {
-            const postData = {
-                publisherName: usePostStore.getState().publisherName,
-                publisherId: usePostStore.getState().publisherId,
-                postTitle: usePostStore.getState().postTitle,
-                content: usePostStore.getState().content,
-                images: usePostStore.getState().images,
-                videos: usePostStore.getState().videos,
-            };
-
             const response = await fetch('http://localhost:8080/api/posts/create', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(postData),
+                body: formData, // No Content-Type header for FormData
             });
 
             const result = await response.json();
             if (response.ok) {
-                set({ success: result.message, isLoading: false }); // Use result.message for the success message
+                set({ success: result.message, isLoading: false });
                 // Reset form after successful submission
                 set({
                     content: '',
