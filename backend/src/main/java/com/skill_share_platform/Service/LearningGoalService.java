@@ -29,15 +29,19 @@ public class LearningGoalService {
             learningGoal.setCategory(learningGoalDTO.getCategory());
             learningGoal.setTargetDate(learningGoalDTO.getTargetDate());
             learningGoal.setStartDate(LocalDateTime.now());
-            learningGoal.setStatus("IN_PROGRESS");
             if (learningGoalDTO.getMilestones() != null) {
                 learningGoal.setMilestones(convertToMilestones(learningGoalDTO.getMilestones()));
             }
-            
+            // Set status based on progress
+            if (learningGoal.getMilestones() != null && !learningGoal.getMilestones().isEmpty()
+                && learningGoal.getMilestones().stream().allMatch(LearningGoal.Milestone::isCompleted)) {
+                learningGoal.setStatus("COMPLETED");
+            } else {
+                learningGoal.setStatus("IN_PROGRESS");
+            }
             UserModel user = userRepository.findById(learningGoalDTO.getUserId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
             learningGoal.setUser(user);
-            
             LearningGoal savedGoal = learningGoalRepository.save(learningGoal);
             return "Learning Goal ID: " + savedGoal.getId() + " created successfully";
         } catch (Exception e) {
@@ -49,16 +53,20 @@ public class LearningGoalService {
         try {
             LearningGoal existingGoal = learningGoalRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Learning goal not found"));
-            
             existingGoal.setTitle(learningGoalDTO.getTitle());
             existingGoal.setDescription(learningGoalDTO.getDescription());
             existingGoal.setCategory(learningGoalDTO.getCategory());
             existingGoal.setTargetDate(learningGoalDTO.getTargetDate());
-            existingGoal.setStatus(learningGoalDTO.getStatus());
             if (learningGoalDTO.getMilestones() != null) {
                 existingGoal.setMilestones(convertToMilestones(learningGoalDTO.getMilestones()));
             }
-            
+            // Set status based on progress
+            if (existingGoal.getMilestones() != null && !existingGoal.getMilestones().isEmpty()
+                && existingGoal.getMilestones().stream().allMatch(LearningGoal.Milestone::isCompleted)) {
+                existingGoal.setStatus("COMPLETED");
+            } else {
+                existingGoal.setStatus("IN_PROGRESS");
+            }
             learningGoalRepository.save(existingGoal);
             return "Learning Goal ID: " + id + " updated successfully";
         } catch (Exception e) {
@@ -110,6 +118,18 @@ public class LearningGoalService {
                     .collect(Collectors.toList());
         } catch (Exception e) {
             System.out.println("Error fetching learning goals by category: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public List<LearningGoalDTO> getLearningGoalsByUserIdAndStatus(String userId, String status) {
+        try {
+            List<LearningGoal> goals = learningGoalRepository.findByUserUserIdAndStatus(userId, status);
+            return goals.stream()
+                    .map(this::convertToDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            System.out.println("Error fetching learning goals by user and status: " + e.getMessage());
             return null;
         }
     }

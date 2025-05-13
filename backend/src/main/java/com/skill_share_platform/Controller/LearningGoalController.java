@@ -61,4 +61,13 @@ public class LearningGoalController {
         }
         return ResponseEntity.ok(goals);
     }
+
+    @GetMapping("/user/{userId}/status/{status}")
+    public ResponseEntity<?> getLearningGoalsByUserIdAndStatus(@PathVariable String userId, @PathVariable String status) {
+        List<LearningGoalDTO> goals = learningGoalService.getLearningGoalsByUserIdAndStatus(userId, status);
+        if (goals == null || goals.isEmpty()) {
+            return ResponseEntity.ok("No learning goals found for User ID: " + userId + " and status: " + status);
+        }
+        return ResponseEntity.ok(goals);
+    }
 } 
