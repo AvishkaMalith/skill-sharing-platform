@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import JoditEditor from 'jodit-react';
-import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
+import Cookies from 'js-cookie';
 
 const EditPost = () => {
     const { postId } = useParams();
@@ -21,7 +21,7 @@ const EditPost = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
 
-    // Fetch post data
+    // Fetch post data and set publisher info from cookies
     useEffect(() => {
         const fetchPost = async () => {
             try {
@@ -31,12 +31,14 @@ const EditPost = () => {
                 }
                 const data = await response.json();
                 setPost(data);
+                const userId = Cookies.get('userId') || data.publisherId;
+                const userName = Cookies.get('userName') || data.publisherName;
                 setFormData({
                     postTitle: data.postTitle || '',
                     content: data.content || '',
                     postCategory: data.postCategory || '',
-                    publisherName: data.publisherName || '',
-                    publisherId: data.publisherId || '',
+                    publisherName: userName,
+                    publisherId: userId,
                 });
             } catch (err) {
                 setError(err.message);
@@ -91,6 +93,12 @@ const EditPost = () => {
         setError(null);
         setSuccess(null);
 
+        if (!formData.publisherId || !formData.publisherName) {
+            setError('Please log in to update the post');
+            setLoading(false);
+            return;
+        }
+
         const formDataToSend = new FormData();
         formDataToSend.append('postTitle', formData.postTitle);
         formDataToSend.append('content', formData.content);
@@ -110,7 +118,7 @@ const EditPost = () => {
                 throw new Error(data.message || 'Failed to update post');
             }
             setSuccess('Post updated successfully');
-            setTimeout(() => navigate('/manage'), 2000); // Redirect after 2 seconds
+            setTimeout(() => navigate('/manage'), 2000);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -136,7 +144,7 @@ const EditPost = () => {
 
     return (
         <>
-            <NavBar />
+
             <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg">
                     <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
@@ -144,38 +152,6 @@ const EditPost = () => {
                     </h2>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Publisher Name */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">
-                                Publisher Name
-                            </label>
-                            <input
-                                type="text"
-                                name="publisherName"
-                                value={formData.publisherName}
-                                onChange={handleInputChange}
-                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Enter your name"
-                                required
-                            />
-                        </div>
-
-                        {/* Publisher ID */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">
-                                Publisher ID
-                            </label>
-                            <input
-                                type="text"
-                                name="publisherId"
-                                value={formData.publisherId}
-                                onChange={handleInputChange}
-                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Enter your ID"
-                                required
-                            />
-                        </div>
-
                         {/* Post Title */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">
@@ -192,7 +168,7 @@ const EditPost = () => {
                             />
                         </div>
 
-                        {/* Post Category */}
+                        {/* Post Category Dropdown */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">
                                 Post Category

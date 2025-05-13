@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import NavBar from '../components/NavBar';
+
 import Footer from '../components/Footer';
 
 // Helper function to strip HTML and get first 25 words
@@ -57,7 +57,7 @@ const PostWall = () => {
 
     return (
         <>
-            <NavBar />
+
             <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto">
                     <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">

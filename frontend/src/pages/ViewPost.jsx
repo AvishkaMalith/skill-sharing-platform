@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import NavBar from '../components/NavBar';
+
 import Footer from '../components/Footer';
 
 // Define the backend base URL (use environment variable in production)
@@ -47,7 +47,7 @@ const ViewPost = () => {
 
     return (
         <>
-            <NavBar />
+
             <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
                     <h1 className="text-4xl font-bold text-gray-900 mb-4">{post.postTitle}</h1>
