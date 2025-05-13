@@ -55,13 +55,12 @@ function App() {
           } />
           <Route path="/learning-goals" element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <div>Learning Goals</div>
               <LearningGoals/>
             </ProtectedRoute>
           } />
           <Route path="/learning-goals/:id" element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <div>Learning Goals</div>
+              <LearningGoalDetail/>
             </ProtectedRoute>
           } />
           <Route path="/create-post" element={

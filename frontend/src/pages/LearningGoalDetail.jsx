@@ -26,7 +26,12 @@ function LearningGoalDetail() {
           `http://localhost:8080/api/learning-goals/${id}`
         );
         const data = await response.json();
-        setGoal(data);
+        if (data && typeof data === 'object' && data.id) {
+          setGoal(data);
+        } else {
+          setGoal(null);
+          setError('Learning goal not found');
+        }
       } catch (err) {
         setError('Failed to fetch learning goal');
         console.error('Error:', err);

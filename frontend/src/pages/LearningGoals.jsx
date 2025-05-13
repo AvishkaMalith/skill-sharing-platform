@@ -3,6 +3,8 @@ import { Plus, Search, Filter } from 'lucide-react';
 import LearningGoalCard from '../components/LearningGoalCard';
 import LearningGoalForm from '../components/LearningGoalForm';
 import Footer from '../components/Footer';
+import learningGoalsApi from '../services/learningGoals';
+import { user as userApi } from '../services/api';
 
 function LearningGoals() {
   const [goals, setGoals] = useState([]);
@@ -12,63 +14,69 @@ function LearningGoals() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState([]);
+  const [userId, setUserId] = useState(null);
+  const [userLoading, setUserLoading] = useState(true);
 
-  // Fetch learning goals
+  // Fetch current user and then their learning goals
   useEffect(() => {
-    const fetchGoals = async () => {
+    const fetchUserAndGoals = async () => {
+      setUserLoading(true);
+      setError(null);
       try {
-        // Replace with actual user ID
-        const userId = "6810059eb70a17529a9f57d3";
-        const response = await fetch(
-          `http://localhost:8080/api/learning-goals/user/${userId}`
-        );
-        const data = await response.json();
+        const userRes = await userApi.getCurrent();
+        const userData = userRes.data;
+        // Try common user id fields
+        const id = userData.userId || userData.id || userData._id;
+        if (!id) throw new Error('User ID not found in response');
+        setUserId(id);
+        // Now fetch goals for this user
+        setLoading(true);
+        const response = await learningGoalsApi.getByUser(id);
+        const data = response.data;
         if (Array.isArray(data)) {
           setGoals(data);
-          // Extract unique categories
           const uniqueCategories = [...new Set(data.map(goal => goal.category))];
           setCategories(uniqueCategories);
         }
       } catch (err) {
-        setError('Failed to fetch learning goals');
+        setError('Failed to fetch user or learning goals');
         console.error('Error:', err);
       } finally {
         setLoading(false);
+        setUserLoading(false);
       }
     };
-
-    fetchGoals();
+    fetchUserAndGoals();
   }, []);
 
   const handleCreateGoal = async (goalData) => {
+    if (!userId) return;
     try {
-      const response = await fetch('http://localhost:8080/api/learning-goals', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...goalData,
-          userId: "6810059eb70a17529a9f57d3", // Replace with actual user ID
-          status: 'IN_PROGRESS',
-        }),
+      await learningGoalsApi.create({
+        ...goalData,
+        userId,
+        status: 'IN_PROGRESS',
       });
-
-      if (response.ok) {
-        // Refresh goals list
-        const updatedResponse = await fetch(
-          `http://localhost:8080/api/learning-goals/user/6810059eb70a17529a9f57d3`
-        );
-        const updatedData = await updatedResponse.json();
-        if (Array.isArray(updatedData)) {
-          setGoals(updatedData);
-        }
-        setShowForm(false);
-      } else {
-        throw new Error('Failed to create goal');
-      }
+      // Refresh goals list
+      const updated = await learningGoalsApi.getByUser(userId);
+      setGoals(updated.data);
+      setShowForm(false);
     } catch (err) {
       setError('Failed to create learning goal');
+      console.error('Error:', err);
+    }
+  };
+
+  const handleDeleteGoal = async (goalId) => {
+    if (!userId) return;
+    if (!window.confirm('Are you sure you want to delete this learning goal?')) return;
+    try {
+      await learningGoalsApi.delete(goalId);
+      // Refresh goals list
+      const updated = await learningGoalsApi.getByUser(userId);
+      setGoals(updated.data);
+    } catch (err) {
+      setError('Failed to delete learning goal');
       console.error('Error:', err);
     }
   };
@@ -80,25 +88,18 @@ function LearningGoals() {
     return matchesSearch && matchesCategory;
   });
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
   return (
     <>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Learning Goals</h1>
+          <h1 className="text-3xl font-bold text-gray-900">My Learning Goals</h1>
           <button
             onClick={() => setShowForm(true)}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 shadow"
+            disabled={userLoading || loading}
           >
             <Plus size={20} className="mr-2" />
-            Create Goal
+            New Goal
           </button>
         </div>
 
@@ -114,6 +115,7 @@ function LearningGoals() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              disabled={userLoading || loading}
             />
           </div>
           <div className="sm:w-64">
@@ -126,6 +128,7 @@ function LearningGoals() {
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="pl-10 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                disabled={userLoading || loading}
               >
                 <option value="">All Categories</option>
                 {categories.map((category) => (
@@ -161,7 +164,11 @@ function LearningGoals() {
           </div>
         )}
 
-        {filteredGoals.length === 0 ? (
+        {userLoading || loading ? (
+          <div className="flex justify-center items-center min-h-[300px]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        ) : filteredGoals.length === 0 ? (
           <div className="text-center py-12">
             <h3 className="mt-2 text-sm font-medium text-gray-900">No goals found</h3>
             <p className="mt-1 text-sm text-gray-500">
@@ -174,6 +181,7 @@ function LearningGoals() {
                 <button
                   onClick={() => setShowForm(true)}
                   className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                  disabled={userLoading || loading}
                 >
                   <Plus size={20} className="mr-2" />
                   Create Goal
@@ -184,7 +192,7 @@ function LearningGoals() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredGoals.map((goal) => (
-              <LearningGoalCard key={goal.id} goal={goal} />
+              <LearningGoalCard key={goal.id} goal={goal} onDelete={handleDeleteGoal} />
             ))}
           </div>
         )}

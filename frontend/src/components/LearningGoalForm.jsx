@@ -51,7 +51,25 @@ function LearningGoalForm({ onSubmit, onClose, initialData = null }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    // Prepare milestones: remove empty, ensure all fields
+    const milestones = (formData.milestones || [])
+      .filter(m => m.title && m.title.trim() !== '')
+      .map(m => ({
+        title: m.title,
+        description: m.description || '',
+        completed: !!m.completed,
+        completedDate: m.completed ? (m.completedDate || null) : null,
+      }));
+    // Prepare date
+    const targetDate = formData.targetDate
+      ? new Date(formData.targetDate).toISOString()
+      : '';
+    const payload = {
+      ...formData,
+      targetDate,
+      milestones,
+    };
+    onSubmit(payload);
   };
 
   return (
