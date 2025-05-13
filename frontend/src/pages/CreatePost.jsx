@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import JoditEditor from 'jodit-react';
-import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
 import usePostStore from '../stores/postStore';
 
@@ -75,7 +74,6 @@ const CreatePost = () => {
 
     return (
         <>
-            <NavBar />
             <div className="min-h-screen bg-gray-100 flex justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-3xl w-full bg-white p-8 rounded-lg shadow-lg">
                     <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">

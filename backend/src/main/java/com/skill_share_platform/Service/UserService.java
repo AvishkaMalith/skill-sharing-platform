@@ -2,6 +2,7 @@ package com.skill_share_platform.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,8 +40,8 @@ public class UserService {
             user.setCreatedAt(userDataTransferObject.getCreatedAt());
             user.setUpdatedAt(userDataTransferObject.getUpdatedAt());
             // Saving the user object to the database
-            userRepository.save(user);
-            return "User ID : " + userDataTransferObject.getUserId() + " created successfully";
+            UserModel savedUser = userRepository.save(user);
+            return "User ID : " + savedUser.getUserId() + " created successfully";
         } catch (Exception e) {
             return "Error creating user: " + e.getMessage();
         }
@@ -122,7 +123,7 @@ public class UserService {
     }
 
     // Method to get the user by attribute
-    public UserModel getUserByEmail(String email) {
+    public Optional<UserModel> getUserByEmail(String email) {
         try {
             return userRepository.findByUserEmail(email);
         } catch (Exception e) {

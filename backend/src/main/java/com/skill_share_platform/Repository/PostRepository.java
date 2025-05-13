@@ -7,4 +7,6 @@ import com.skill_share_platform.Model.PostModel;
 
 @Repository
 public interface PostRepository extends MongoRepository<PostModel, String> {
+  // Method to count posts by user ID
+  long countByPublisherId(String userId);
 }
