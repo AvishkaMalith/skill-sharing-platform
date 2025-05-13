@@ -1,69 +1,71 @@
 package com.skill_share_platform.Model;
 
-import java.time.LocalDateTime;
-
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@Document(value = "comments")
+import java.util.Date;
+
+@Document(collection = "comments")
 public class CommentModel {
-  // Basic attributes of a comment
-  private String postId;
-  private String userId;
-  private String content;
-  private LocalDateTime createdAt;
-  private LocalDateTime updatedAt;
 
-  // Default constructor
-  public CommentModel() {
-  }
+    @Id
+    private String id;
 
-  // Parameterized constructor
-  public CommentModel(String postId, String userId, String content, LocalDateTime createdAt, LocalDateTime updatedAt) {
-    this.postId = postId;
-    this.userId = userId;
-    this.content = content;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-  }
+    @Field("postId")
+    private String postId;
 
-  // Getters and Setters
-  public String getPostId() {
-    return postId;
-  }
+    private String userId;
+    private String content;
+    private Date createdAt;
+    private Date updatedAt;
 
-  public void setPostId(String postId) {
-    this.postId = postId;
-  }
+    // Getters and Setters
+    public String getId() {
+        return id;
+    }
 
-  public String getUserId() {
-    return userId;
-  }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-  public void setUserId(String userId) {
-    this.userId = userId;
-  }
+    public String getPostId() {
+        return postId;
+    }
 
-  public String getContent() {
-    return content;
-  }
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
 
-  public void setContent(String content) {
-    this.content = content;
-  }
+    public String getUserId() {
+        return userId;
+    }
 
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
-  public void setCreatedAt(LocalDateTime createdAt) {
-    this.createdAt = createdAt;
-  }
+    public String getContent() {
+        return content;
+    }
 
-  public LocalDateTime getUpdatedAt() {
-    return updatedAt;
-  }
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-  public void setUpdatedAt(LocalDateTime updatedAt) {
-    this.updatedAt = updatedAt;
-  }
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

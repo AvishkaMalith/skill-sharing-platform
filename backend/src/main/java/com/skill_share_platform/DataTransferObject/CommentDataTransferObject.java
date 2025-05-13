@@ -1,66 +1,76 @@
 package com.skill_share_platform.DataTransferObject;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 public class CommentDataTransferObject {
-  // Basic attributes of a comment
-  private String postId;
-  private String userId;
-  private String content;
-  private LocalDateTime createdAt;
-  private LocalDateTime updatedAt;
+    private String commentId;
+    private String postId;
+    private String userId;
+    private String content;
+    private Date createdAt;
+    private Date updatedAt;
 
-  // Default constructor
-  public CommentDataTransferObject() {
-  }
+    // Default constructor
+    public CommentDataTransferObject() {
+    }
 
-  // Parameterized constructor
-  public CommentDataTransferObject(String postId, String userId, String content, LocalDateTime createdAt, LocalDateTime updatedAt) {
-    this.postId = postId;
-    this.userId = userId;
-    this.content = content;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-  }
+    // Parameterized constructor
+    public CommentDataTransferObject(String commentId, String postId, String userId, String content,
+                                     Date createdAt, Date updatedAt) {
+        this.commentId = commentId;
+        this.postId = postId;
+        this.userId = userId;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
-  // Getters and Setters
-  public String getPostId() {
-    return postId;
-  }
+    // Getters and Setters
+    public String getCommentId() {
+        return commentId;
+    }
 
-  public void setPostId(String postId) {
-    this.postId = postId;
-  }
+    public void setCommentId(String commentId) {
+        this.commentId = commentId;
+    }
 
-  public String getUserId() {
-    return userId;
-  }
+    public String getPostId() {
+        return postId;
+    }
 
-  public void setUserId(String userId) {
-    this.userId = userId;
-  }
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
 
-  public String getContent() {
-    return content;
-  }
+    public String getUserId() {
+        return userId;
+    }
 
-  public void setContent(String content) {
-    this.content = content;
-  }
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
+    public String getContent() {
+        return content;
+    }
 
-  public void setCreatedAt(LocalDateTime createdAt) {
-    this.createdAt = createdAt;
-  }
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-  public LocalDateTime getUpdatedAt() {
-    return updatedAt;
-  }
+    public Date getCreatedAt() {
+        return createdAt;
+    }
 
-  public void setUpdatedAt(LocalDateTime updatedAt) {
-    this.updatedAt = updatedAt;
-  }
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }
