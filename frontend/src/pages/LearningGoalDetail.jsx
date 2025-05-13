@@ -26,7 +26,12 @@ function LearningGoalDetail() {
           `http://localhost:8080/api/learning-goals/${id}`
         );
         const data = await response.json();
-        setGoal(data);
+        if (data && typeof data === 'object' && data.id) {
+          setGoal(data);
+        } else {
+          setGoal(null);
+          setError('Learning goal not found');
+        }
       } catch (err) {
         setError('Failed to fetch learning goal');
         console.error('Error:', err);
@@ -87,6 +92,7 @@ function LearningGoalDetail() {
   };
 
   const handleToggleMilestone = async (milestoneIndex) => {
+    setError(null);
     const updatedMilestones = goal.milestones.map((milestone, index) => {
       if (index === milestoneIndex) {
         return {
@@ -97,6 +103,8 @@ function LearningGoalDetail() {
       }
       return milestone;
     });
+
+    setGoal({ ...goal, milestones: updatedMilestones });
 
     try {
       const response = await fetch(
@@ -116,12 +124,12 @@ function LearningGoalDetail() {
       if (response.ok) {
         const updatedGoal = await response.json();
         setGoal(updatedGoal);
+        setError(null);
       } else {
         throw new Error('Failed to update milestone');
       }
     } catch (err) {
       setError('Failed to update milestone');
-      console.error('Error:', err);
     }
   };
 
