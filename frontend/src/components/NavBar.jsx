@@ -21,7 +21,7 @@ function Navbar({ isAuthenticated, setIsAuthenticated }) {
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const navLinks = [
-    { name: 'Home', href: '/', icon: Home },
+    { name: isAuthenticated ? 'Dashboard' : 'Home', href: isAuthenticated ? '/dashboard' : '/', icon: Home },
     { name: 'Learning Goals', href: '/learning-goals', icon: BookOpen },
     { name: 'Community', href: '/wall', icon: Users },
     { name: 'About', href: '/about', icon: Info },
