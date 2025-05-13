@@ -24,7 +24,6 @@ function Navbar({ isAuthenticated, setIsAuthenticated }) {
     { name: isAuthenticated ? 'Dashboard' : 'Home', href: isAuthenticated ? '/dashboard' : '/', icon: Home },
     { name: 'Learning Goals', href: '/learning-goals', icon: BookOpen },
     { name: 'Community', href: '/wall', icon: Users },
-    { name: 'About', href: '/about', icon: Info },
     { name: 'Create Post', href: '/create-post', icon: PenSquare },
     { name: 'Chat', href: '/chat', icon: Rocket },
   ];
