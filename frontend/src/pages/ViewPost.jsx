@@ -3,6 +3,9 @@ import { useParams } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
 
+// Define the backend base URL (use environment variable in production)
+const BACKEND_BASE_URL = 'http://localhost:8080';
+
 const ViewPost = () => {
     const { postId } = useParams();
     const [post, setPost] = useState(null);
@@ -15,7 +18,17 @@ const ViewPost = () => {
                 const response = await fetch(`http://localhost:8080/api/posts/get/${postId}`);
                 const data = await response.json();
                 if (response.ok) {
-                    setPost(data);
+                    // Prepend backend base URL to image and video paths
+                    const updatedPost = {
+                        ...data,
+                        images: data.images
+                            ? data.images.map((img) => `${BACKEND_BASE_URL}${img}`)
+                            : [],
+                        videos: data.videos
+                            ? data.videos.map((vid) => `${BACKEND_BASE_URL}${vid}`)
+                            : [],
+                    };
+                    setPost(updatedPost);
                 } else {
                     setError('Post not found');
                 }
