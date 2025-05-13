@@ -1,54 +1,53 @@
 package com.skill_share_platform.Controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
-
 import com.skill_share_platform.DataTransferObject.CommentDataTransferObject;
 import com.skill_share_platform.Service.CommentService;
-import com.skill_share_platform.Model.CommentModel;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("api/comments")
+@RequestMapping("/api/comments")
 public class CommentController {
 
-  @Autowired
-  private CommentService commentService;
+    private final CommentService commentService;
 
-  // Endpoint to create a comment
-  @PostMapping("/create")
-  @ResponseStatus(HttpStatus.CREATED)
-  public String createComment(@RequestBody CommentDataTransferObject commentDataTransferObject) {
-    return commentService.createComment(commentDataTransferObject);
-  }
+    @Autowired
+    public CommentController(CommentService commentService) {
+        this.commentService = commentService;
+    }
 
-  // Endpoint to get all comments
-  @GetMapping("/get")
-  @ResponseStatus(HttpStatus.OK)
-  public List<CommentModel> getComments() {
-    return commentService.getComments();
-  }
+    // Create a comment
+    @PostMapping("/create")
+    @ResponseStatus(HttpStatus.CREATED)
+    public String createComment(@RequestBody CommentDataTransferObject comment) {
+        return commentService.createComment(comment);
+    }
 
-  // Endpoint to update a specific comment by commentId
-  @PutMapping("update/{commentId}")
-  public String updateComment(@PathVariable String commentId,
-      @RequestBody CommentDataTransferObject commentDataTransferObject) {
-    return commentService.updateCommentById(commentId, commentDataTransferObject);
-  }
+    // Get comments (all or by postId)
+    @GetMapping("/get")
+    @ResponseStatus(HttpStatus.OK)
+    public List<CommentDataTransferObject> getComments(@RequestParam(required = false) String postId) {
+        if (postId != null && !postId.isEmpty()) {
+            return commentService.getCommentsByPostId(postId);
+        }
+        return commentService.getComments();
+    }
 
-  // Endpoint to delete a comment by commentId
-  @DeleteMapping("/delete/{commentId}")
-  public String deleteComment(@PathVariable String commentId) {
-    return commentService.deleteCommentById(commentId);
-  }
+    // Update a comment by commentId
+    @PutMapping("/update/{commentId}")
+    @ResponseStatus(HttpStatus.OK)
+    public String updateComment(@PathVariable String commentId,
+                               @RequestBody CommentDataTransferObject updatedComment) {
+        return commentService.updateCommentById(commentId, updatedComment);
+    }
+
+    // Delete a comment by commentId
+    @DeleteMapping("/delete/{commentId}")
+    @ResponseStatus(HttpStatus.OK)
+    public String deleteComment(@PathVariable String commentId) {
+        return commentService.deleteCommentById(commentId);
+    }
 }

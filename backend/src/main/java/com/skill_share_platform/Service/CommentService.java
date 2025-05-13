@@ -1,97 +1,121 @@
 package com.skill_share_platform.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.skill_share_platform.DataTransferObject.CommentDataTransferObject;
+import com.skill_share_platform.Model.CommentModel;
+import com.skill_share_platform.Repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.skill_share_platform.Repository.CommentRepository;
-import com.skill_share_platform.DataTransferObject.CommentDataTransferObject;
-import com.skill_share_platform.Model.CommentModel;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
+    private final CommentRepository commentRepository;
 
-  @Autowired
-  private CommentRepository commentRepository;
-
-  // Method to create a comment
-  public String createComment(CommentDataTransferObject commentDataTransferObject) {
-    try {
-      // Creating an object of comment class
-      CommentModel comment = new CommentModel();
-      // Assigning the values of data transfer object class to the user object
-      comment.setPostId(commentDataTransferObject.getPostId());
-      comment.setUserId(commentDataTransferObject.getUserId());
-      comment.setContent(commentDataTransferObject.getContent());
-      comment.setCreatedAt(commentDataTransferObject.getCreatedAt());
-      comment.setUpdatedAt(commentDataTransferObject.getUpdatedAt());
-      // Saving the comment object to the database
-      commentRepository.save(comment);
-      return "comment created successfully";
-    } catch (Exception e) {
-      return "Error creating comment : " + e.getMessage();
+    @Autowired
+    public CommentService(CommentRepository commentRepository) {
+        this.commentRepository = commentRepository;
     }
-  }
 
-  // Method to get all the comments
-  public List<CommentModel> getComments() {
-    // Creating an empty list of comments
-    List<CommentModel> comments = new ArrayList<>();
-    try {
-      // assigning the comments from the database to the list
-      comments = commentRepository.findAll();
-    } catch (Exception e) {
-      System.out.println("Error fetching comments: " + e.getMessage());
+    // Map DTO to Model
+    private CommentModel toModel(CommentDataTransferObject dto) {
+        CommentModel model = new CommentModel();
+        model.setId(dto.getCommentId());
+        model.setPostId(dto.getPostId());
+        model.setUserId(dto.getUserId());
+        model.setContent(dto.getContent());
+        model.setCreatedAt(dto.getCreatedAt());
+        model.setUpdatedAt(dto.getUpdatedAt());
+        return model;
     }
-    return comments;
-  }
 
-  // Method to get a specific comment by commentId
-  public CommentModel getcommentById(String commentId) {
-    // Checking if the given postId exists in the database
-    if (commentRepository.existsById(commentId)) {
-      // If comment Id exists, return the comment object
-      return commentRepository.findById(commentId).get();
-    } else {
-      // If comment Id does not exist, return null
-      return null;
+    // Map Model to DTO
+    private CommentDataTransferObject toDto(CommentModel model) {
+        return new CommentDataTransferObject(
+                model.getId(),
+                model.getPostId(),
+                model.getUserId(),
+                model.getContent(),
+                model.getCreatedAt(),
+                model.getUpdatedAt()
+        );
     }
-  }
 
-  // Method to update a comment by commentId
-  public String updateCommentById(String commentId, CommentDataTransferObject commentDataTransferObject) {
-    try {
-      if (commentRepository.existsById(commentId)) {
-        // Getting the existing comment details
-        CommentModel existingComment = commentRepository.findById(commentId).get();
-        // Assigning the content and updatedAt of Data transfer object class to the comment object
-        existingComment.setContent(commentDataTransferObject.getContent());
-        existingComment.setUpdatedAt(commentDataTransferObject.getUpdatedAt());
-        // Saving the updated comment to the database
-        commentRepository.save(existingComment);
-        return "Comment ID : " + commentId + " updated successfully";
-      } else {
-        return "Comment ID : " + commentId + " not found";
-      }
-    } catch (Exception e) {
-      return "Error updating comment : " + e.getMessage();
-    }
-  }
+    // Create a comment
+    public String createComment(CommentDataTransferObject commentDto) {
+        try {
+            if (commentDto == null) return "Error: comment data is null";
+            if (commentDto.getPostId() == null || commentDto.getPostId().isEmpty()) {
+                return "Error: postId is required";
+            }
+            if (commentDto.getContent() == null || commentDto.getContent().isEmpty()) {
+                return "Error: content is required";
+            }
 
-  // Method to delete a comment by commentId
-  public String deleteCommentById(String commentId) {
-    try {
-      // Checking if the comment Id exists in the database
-      if(commentRepository.existsById(commentId)) {
-        commentRepository.deleteById(commentId);
-        return "Comment ID : " + commentId + " deleted successfully";
-      } else {
-        return "Comment ID : " + commentId + " not found";
-      }
-    } catch (Exception e) {
-      return "Error deleting comment : " + e.getMessage();
+            CommentModel model = toModel(commentDto);
+            model.setCreatedAt(new Date());
+            model.setUpdatedAt(new Date());
+            commentRepository.save(model);
+            return "Comment created successfully";
+        } catch (Exception e) {
+            return "Error creating comment: " + e.getMessage();
+        }
     }
-  }
+
+    // Get all comments
+    public List<CommentDataTransferObject> getComments() {
+        try {
+            return commentRepository.findAll().stream()
+                    .map(this::toDto)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    // Get comments by postId
+    public List<CommentDataTransferObject> getCommentsByPostId(String postId) {
+        try {
+            return commentRepository.findByPostId(postId).stream()
+                    .map(this::toDto)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    // Update comment by ID
+    public String updateCommentById(String commentId, CommentDataTransferObject updatedDto) {
+        try {
+            CommentModel existing = commentRepository.findById(commentId).orElse(null);
+            if (existing == null) {
+                return "Comment ID: " + commentId + " not found";
+            }
+
+            if (updatedDto.getContent() != null && !updatedDto.getContent().isEmpty()) {
+                existing.setContent(updatedDto.getContent());
+            }
+            existing.setUpdatedAt(new Date());
+            commentRepository.save(existing);
+            return "Comment ID: " + commentId + " updated successfully";
+        } catch (Exception e) {
+            return "Error updating comment: " + e.getMessage();
+        }
+    }
+
+    // Delete comment by ID
+    public String deleteCommentById(String commentId) {
+        try {
+            if (!commentRepository.existsById(commentId)) {
+                return "Comment ID: " + commentId + " not found";
+            }
+            commentRepository.deleteById(commentId);
+            return "Comment ID: " + commentId + " deleted successfully";
+        } catch (Exception e) {
+            return "Error deleting comment: " + e.getMessage();
+        }
+    }
 }
