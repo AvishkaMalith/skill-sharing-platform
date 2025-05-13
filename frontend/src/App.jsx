@@ -4,9 +4,16 @@ import { auth } from './services/api';
 import Home from './pages/Home';
 import Navbar from './components/Navbar'; 
 import CreatePost from './pages/CreatePost';
+
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+
+import ViewPost from './pages/ViewPost';
+import PostWall from './pages/PostWall';
+import ManagePost from './pages/ManagePost';
+import EditPost from './pages/EditPost';
+
 import LearningGoals from './pages/LearningGoals';
 import LearningGoalDetail from './pages/LearningGoalDetail';
 
@@ -38,6 +45,7 @@ function App() {
     }
   
     return (
+
       <Router>
         <Navbar 
           isAuthenticated={isAuthenticated} 
@@ -71,6 +79,21 @@ function App() {
           } />
         </Routes>
       </Router>
+
+        <Router>
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/create-post" element={<CreatePost />} />
+                <Route path="/view-post/:postId" element={<ViewPost />} />
+                <Route path="/wall" element={<PostWall />} />
+                <Route path="/post/:postId" element={<ViewPost />} />
+                <Route path="/manage" element={<ManagePost />} />
+                <Route path="/edit/:postId" element={<EditPost />} />
+                <Route path="/learning-goals" element={<LearningGoals />} />
+                <Route path="/learning-goals/:id" element={<LearningGoalDetail />} />
+            </Routes>
+        </Router>
+
     );
   }
   

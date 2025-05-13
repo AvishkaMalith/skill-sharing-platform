@@ -10,6 +10,8 @@ const CreatePost = () => {
         videos,
         publisherName,
         publisherId,
+        postCategory,
+        postTitle,
         isLoading,
         error,
         success,
@@ -18,13 +20,15 @@ const CreatePost = () => {
         setVideos,
         setPublisherName,
         setPublisherId,
+        setPostCategory,
+        setPostTitle,
         createPost,
     } = usePostStore();
 
-    const [imageInput, setImageInput] = useState('');
-    const [videoInput, setVideoInput] = useState('');
+    const [imageFiles, setImageFiles] = useState([]);
+    const [videoFiles, setVideoFiles] = useState([]);
 
-    // Memoize the Jodit Editor configuration to prevent focus issues
+    // Memoize the Jodit Editor configuration
     const config = useMemo(
         () => ({
             readonly: false,
@@ -40,29 +44,32 @@ const CreatePost = () => {
                 'hr', 'eraser', 'fullsize',
             ],
             uploader: {
-                insertImageAsBase64URI: true, // For testing, use base64; later, configure for file uploads
+                insertImageAsBase64URI: true,
             },
         }),
         []
     );
 
-    const handleAddImage = () => {
-        if (imageInput.trim()) {
-            setImages([...images, imageInput.trim()]);
-            setImageInput('');
-        }
+    const handleImageUpload = (e) => {
+        setImageFiles([...e.target.files]);
     };
 
-    const handleAddVideo = () => {
-        if (videoInput.trim()) {
-            setVideos([...videos, videoInput.trim()]);
-            setVideoInput('');
-        }
+    const handleVideoUpload = (e) => {
+        setVideoFiles([...e.target.files]);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await createPost();
+        const formData = new FormData();
+        formData.append('publisherName', publisherName);
+        formData.append('publisherId', publisherId);
+        formData.append('postCategory', postCategory);
+        formData.append('postTitle', postTitle);
+        formData.append('content', content);
+        imageFiles.forEach((file) => formData.append('imageFiles', file));
+        videoFiles.forEach((file) => formData.append('videoFiles', file));
+
+        await createPost(formData);
     };
 
     return (
@@ -104,6 +111,36 @@ const CreatePost = () => {
                             />
                         </div>
 
+                        {/* Post Category */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Post Category
+                            </label>
+                            <input
+                                type="text"
+                                value={postCategory}
+                                onChange={(e) => setPostCategory(e.target.value)}
+                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Enter post category"
+                                required
+                            />
+                        </div>
+
+                        {/* Post Title */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Post Title
+                            </label>
+                            <input
+                                type="text"
+                                value={postTitle}
+                                onChange={(e) => setPostTitle(e.target.value)}
+                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Enter post title"
+                                required
+                            />
+                        </div>
+
                         {/* Post Content (Jodit Editor) */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">
@@ -112,31 +149,23 @@ const CreatePost = () => {
                             <JoditEditor
                                 value={content}
                                 config={config}
-                                onBlur={(newContent) => setContent(newContent)} // Update content on blur for better performance
-                                onChange={() => {}} // Empty onChange to prevent unnecessary re-renders
+                                onBlur={(newContent) => setContent(newContent)}
+                                onChange={() => {}}
                             />
                         </div>
 
                         {/* Images */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">
-                                Images (Enter file paths for now)
+                                Upload Images
                             </label>
-                            <div className="flex items-center space-x-4 mt-1">
-                                <input
-                                    type="text"
-                                    value={imageInput}
-                                    onChange={(e) => setImageInput(e.target.value)}
-                                    className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="e.g., uploads/images/image1.jpg"
-                                />
-                                <button
-                                    onClick={handleAddImage}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                                >
-                                    Add Image
-                                </button>
-                            </div>
+                            <input
+                                type="file"
+                                multiple
+                                onChange={handleImageUpload}
+                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                accept="image/*"
+                            />
                             {images.length > 0 && (
                                 <ul className="mt-2 space-y-1">
                                     {images.map((img, index) => (
@@ -151,23 +180,15 @@ const CreatePost = () => {
                         {/* Videos */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700">
-                                Videos (Enter file paths for now)
+                                Upload Videos
                             </label>
-                            <div className="flex items-center space-x-4 mt-1">
-                                <input
-                                    type="text"
-                                    value={videoInput}
-                                    onChange={(e) => setVideoInput(e.target.value)}
-                                    className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="e.g., uploads/videos/video1.mp4"
-                                />
-                                <button
-                                    onClick={handleAddVideo}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                                >
-                                    Add Video
-                                </button>
-                            </div>
+                            <input
+                                type="file"
+                                multiple
+                                onChange={handleVideoUpload}
+                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                accept="video/*"
+                            />
                             {videos.length > 0 && (
                                 <ul className="mt-2 space-y-1">
                                     {videos.map((vid, index) => (
@@ -193,14 +214,8 @@ const CreatePost = () => {
                         </div>
 
                         {/* Feedback Messages */}
-                        {error && (
-                            <p className="text-red-500 text-center mt-4">{error}</p>
-                        )}
-                        {success && (
-                            <p className="text-green-500 text-center mt-4">
-                                Post created successfully! {success}
-                            </p>
-                        )}
+                        {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+                        {success && <p className="text-green-500 text-center mt-4">{success}</p>}
                     </div>
                 </div>
             </div>

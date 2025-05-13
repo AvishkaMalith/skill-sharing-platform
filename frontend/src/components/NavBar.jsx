@@ -9,6 +9,7 @@ import {
   LogIn,
   Rocket,
   PenSquare,
+  Eye,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth } from '../services/api';
@@ -26,6 +27,7 @@ function Navbar({ isAuthenticated, setIsAuthenticated }) {
     { name: 'Community', href: '/community', icon: Users },
     { name: 'About', href: '/about', icon: Info },
     { name: 'Create Post', href: '/create-post', icon: PenSquare },
+    { name: 'View Post', href: '/view-post', icon: Eye },
   ];
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
@@ -42,6 +44,7 @@ function Navbar({ isAuthenticated, setIsAuthenticated }) {
   };
 
   return (
+
     <>
       <nav className="bg-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -52,6 +55,18 @@ function Navbar({ isAuthenticated, setIsAuthenticated }) {
                 <span className="text-black">Era</span>
               </Link>
             </div>
+
+      <>
+        <nav className="bg-white shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between h-16 items-center">
+              <div className="flex items-center">
+                            <span className="text-3xl font-bold text-blue-500">
+                                Skill
+                                <span className="text-black">Era</span>
+                            </span>
+              </div>
+
 
             <div className="sm:hidden">
               <button onClick={toggleMenu} className="text-gray-700 hover:text-blue-600">
