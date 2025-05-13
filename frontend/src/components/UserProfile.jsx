@@ -141,15 +141,64 @@ const UserProfile = ({ userData, onSave }) => {
           {/* Skills */}
           <div>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Skills</h2>
+
             {editMode ? (
-              <input
-                type="text"
-                name="currentSkills"
-                value={formData.currentSkills?.join(", ") || ""}
-                onChange={(e) => handleListChange("currentSkills", e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Skill1, Skill2, Skill3"
-              />
+              <>
+                <div className="flex gap-2 mb-3">
+                  <input
+                    type="text"
+                    value={formData.newSkill || ""}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, newSkill: e.target.value }))
+                    }
+                    className="flex-grow p-2 border border-gray-300 rounded-md"
+                    placeholder="Add a new skill"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const skill = formData.newSkill?.trim();
+                      if (
+                        skill &&
+                        !formData.currentSkills?.includes(skill)
+                      ) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          currentSkills: [...(prev.currentSkills || []), skill],
+                          newSkill: "",
+                        }));
+                      }
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+                  >
+                    Add
+                  </button>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {(formData.currentSkills || []).map((skill, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full"
+                    >
+                      <span>{skill}</span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            currentSkills: prev.currentSkills.filter((_, i) => i !== idx),
+                          }))
+                        }
+                        className="ml-2 text-red-500 hover:text-red-700 font-bold"
+                        title="Remove skill"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {formData.currentSkills?.length > 0 ? (
@@ -218,13 +267,13 @@ const UserProfile = ({ userData, onSave }) => {
           <div>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Badges</h2>
             <div className="flex flex-wrap gap-4">
-              {formData.badges && Object.entries(formData.badges).length > 0 ? (
-                Object.entries(formData.badges).map(([name, year], idx) => (
+              {formData.badges?.length > 0 ? (
+                formData.badges.map((badge, idx) => (
                   <div
                     key={idx}
                     className="bg-yellow-100 text-yellow-800 text-sm font-medium px-3 py-1 rounded-full"
                   >
-                    {name} ({year})
+                    {badge}
                   </div>
                 ))
               ) : (

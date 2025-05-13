@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import chord_C from "./C.png";
 import chord_D from "./D.png";
 import chord_G from "./G.png";
@@ -7,11 +9,18 @@ import profilePicture from "./girl.jpg";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
 
-import { useState } from 'react';
+import useUserProfileStore from "../stores/userProfile";
 
 const OtherUserProfile = () => {
-  // Mock user data
+  // Mock current user ID (replace with actual auth context or store)
+  const currentUserId = "current_user_id";
+
+  // Get followUser, isFollowing, and error from the store
+  const { followUser, isFollowing, error } = useUserProfileStore();
+
+  // Mock user data (with userId added for followedId)
   const userData = {
+    userId: "Janakalani200572", // Added userId for followedId
     userName: "Janakalani Nishadi",
     fullName: "Janaki200572",
     bio: "Enthusiastic coder and mentor. Sharing knowledge on web development and guitar lessons!",
@@ -21,7 +30,7 @@ const OtherUserProfile = () => {
     currentSkills: ["Guitar", "CSS", "JavaScript", "Photography"],
     socialLinks: {
       twitter: "https://twitter.com/janesmith",
-      github: "https://github.com/janesmith"
+      github: "https://github.com/janesmith",
     },
     followers: ["john_doe", "bob_jones", "alice_wonder"],
     following: ["charlie_brown", "david_lee"],
@@ -67,11 +76,21 @@ const OtherUserProfile = () => {
     },
   ];
 
-  // State for follow/unfollow
-  const [isFollowing, setIsFollowing] = useState(false);
+  // State to track follow status and followers count
+  const [isUserFollowing, setIsUserFollowing] = useState(false);
+  const [followersCount, setFollowersCount] = useState(userData.followers.length);
 
-  const handleFollowToggle = () => {
-    setIsFollowing(!isFollowing);
+  // Handle follow/unfollow action
+  const handleFollowToggle = async () => {
+    try {
+      const response = await followUser(currentUserId, userData.userId);
+      // Update local state on success
+      setIsUserFollowing(true);
+      setFollowersCount((prev) => prev + 1);
+      console.log(response);
+    } catch (err) {
+      console.error(error || err.message);
+    }
   };
 
   return (
@@ -96,16 +115,20 @@ const OtherUserProfile = () => {
             {/* Follow/Unfollow Button */}
             <button
               onClick={handleFollowToggle}
-              className={`mt-4 px-4 py-2 rounded-lg font-semibold text-white ${isFollowing ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'
-                }`}
+              disabled={isFollowing || isUserFollowing}
+              className={`mt-4 px-4 py-2 rounded-lg font-semibold text-white ${
+                isUserFollowing
+                  ? "bg-gray-500 cursor-not-allowed"
+                  : "bg-blue-500 hover:bg-blue-600"
+              } ${isFollowing ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              {isFollowing ? 'Unfollow' : 'Follow'}
+              {isFollowing ? "Following..." : isUserFollowing ? "Following" : "Follow"}
             </button>
 
             {/* Stats */}
             <div className="mt-4 flex gap-6">
               <div>
-                <span className="font-semibold text-gray-800">{userData.followers.length}</span>
+                <span className="font-semibold text-gray-800">{followersCount}</span>
                 <span className="text-gray-600"> Followers</span>
               </div>
               <div>
@@ -177,7 +200,9 @@ const OtherUserProfile = () => {
 
         {/* Right Half: Posts */}
         <div className="lg:w-2/3">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Posts by {userData.fullName}</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            Posts by {userData.fullName}
+          </h2>
           <div className="space-y-6">
             {userPosts.map((post) => (
               <div key={post.id} className="bg-white shadow-md rounded-lg p-6">
@@ -191,7 +216,9 @@ const OtherUserProfile = () => {
                         alt={image.caption}
                         className="w-full h-48 object-cover rounded-lg"
                       />
-                      <p className="text-gray-500 text-sm mt-1 text-center">{image.caption}</p>
+                      <p className="text-gray-500 text-sm mt-1 text-center">
+                        {image.caption}
+                      </p>
                     </div>
                   ))}
                 </div>

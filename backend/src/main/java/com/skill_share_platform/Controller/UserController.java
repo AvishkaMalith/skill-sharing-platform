@@ -71,4 +71,17 @@ public class UserController {
         return user;
     }
 
+    // Endpoint to follow a user
+    @PostMapping("/follow/{followerId}/{followedId}")
+    @ResponseStatus(HttpStatus.OK)
+    public String followUser(@PathVariable String followerId, @PathVariable String followedId) {
+        return userService.followUser(followerId, followedId);
+    }
+
+    @PostMapping("/assign-badge/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public String assignBadge(@PathVariable String userId) {
+        return userService.assignBadgeBasedOnPosts(userId);
+    }
+
 }

@@ -99,6 +99,71 @@ const useUserProfileStore = create((set) => ({
       });
     }
   },
+
+  // Follow a user
+  followUser: async (followerId, followedId) => {
+    set({ isFollowing: true, error: null });
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/follow/${followerId}/${followedId}`
+      );
+
+      set((state) => {
+        // Update userProfiles
+        const updatedUserProfiles = state.userProfiles.map((user) => {
+          if (user.userId === followerId) {
+            return {
+              ...user,
+              following: user.following
+                ? [...user.following, followedId]
+                : [followedId],
+            };
+          }
+          if (user.userId === followedId) {
+            return {
+              ...user,
+              followers: user.followers
+                ? [...user.followers, followerId]
+                : [followerId],
+            };
+          }
+          return user;
+        });
+
+        // Update userProfile if it matches followerId or followedId
+        const updatedUserProfile =
+          state.userProfile.userId === followerId
+            ? {
+                ...state.userProfile,
+                following: state.userProfile.following
+                  ? [...state.userProfile.following, followedId]
+                  : [followedId],
+              }
+            : state.userProfile.userId === followedId
+            ? {
+                ...state.userProfile,
+                followers: state.userProfile.followers
+                  ? [...state.userProfile.followers, followerId]
+                  : [followerId],
+              }
+            : state.userProfile;
+
+        return {
+          userProfiles: updatedUserProfiles,
+          userProfile: updatedUserProfile,
+          isFollowing: false,
+        };
+      });
+
+      return response.data;
+    } catch (error) {
+      set({
+        isFollowing: false,
+        error: error.message || "Failed to follow user",
+      });
+      throw error;
+    }
+  },
 }));
 
 export default useUserProfileStore;

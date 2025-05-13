@@ -9,7 +9,7 @@ import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import LearningGoals from './pages/LearningGoals';
 import LearningGoalDetail from './pages/LearningGoalDetail';
-
+import UserProfile from './pages/UserProfile';
 
 
 function App() {
@@ -51,6 +51,11 @@ function App() {
           <Route path="/dashboard" element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <Dashboard/>
+            </ProtectedRoute>
+          } />
+          <Route path="/user-profile" element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <UserProfile/>
             </ProtectedRoute>
           } />
           <Route path="/learning-goals" element={

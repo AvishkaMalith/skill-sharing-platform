@@ -20,7 +20,7 @@ const Dashboard = () => {
           navigate('/login');
           return;
         }
-        
+
         // Fetch dashboard data
         const response = await dashboard.getData();
         setUser(response.data.user);
@@ -66,13 +66,18 @@ const Dashboard = () => {
         <h1>Skill Sharing Platform</h1>
         <div className="user-profile">
           {user?.profilePictureUrl && (
-            <img 
-              src={user.profilePictureUrl} 
-              alt="Profile" 
-              className="profile-image" 
+            <img
+              src={user.profilePictureUrl}
+              alt="Profile"
+              className="profile-image"
             />
           )}
-          <span className="username">{user?.userName || 'User'}</span>
+          <button
+            className="username-button"
+            onClick={() => navigate('/user-profile', { state: { userId: user?.userId } })}
+          >
+            {user?.userName || 'User'}
+          </button>
           <button className="logout-button" onClick={handleLogout}>
             Logout
           </button>
@@ -81,12 +86,12 @@ const Dashboard = () => {
 
       <main className="dashboard-content">
         {error && <div className="error-message">{error}</div>}
-        
+
         <div className="welcome-card">
           <h2>Welcome, {user?.userName || 'User'}!</h2>
           <p>This is your skill sharing dashboard where you can track your learning progress and share your skills with others.</p>
         </div>
-        
+
         {/* Additional dashboard content can be added here */}
         <div className="dashboard-stats">
           <div className="stat-card">

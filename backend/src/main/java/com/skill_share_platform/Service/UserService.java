@@ -10,12 +10,15 @@ import org.springframework.stereotype.Service;
 import com.skill_share_platform.DataTransferObject.UserDataTransferObject;
 import com.skill_share_platform.Model.UserModel;
 import com.skill_share_platform.Repository.UserRepository;
+import com.skill_share_platform.Repository.PostRepository;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PostRepository postRepository;
 
     // Method to create a user
     public String createUser(UserDataTransferObject userDataTransferObject) {
@@ -129,6 +132,94 @@ public class UserService {
         } catch (Exception e) {
             System.out.println("Error fetching user by email: " + e.getMessage());
             return null;
+        }
+    }
+
+    // Method to follow a user
+    public String followUser(String followerId, String followedId) {
+        try {
+            // Check if both users exist
+            if (!userRepository.existsById(followerId)) {
+                return "Follower ID : " + followerId + " not found";
+            }
+            if (!userRepository.existsById(followedId)) {
+                return "Followed ID : " + followedId + " not found";
+            }
+            // Prevent self-follow
+            if (followerId.equals(followedId)) {
+                return "Cannot follow yourself";
+            }
+
+            // Get the follower and followed user objects
+            UserModel follower = userRepository.findById(followerId).get();
+            UserModel followed = userRepository.findById(followedId).get();
+
+            // Initialize lists if null
+            if (follower.getFollowing() == null) {
+                follower.setFollowing(new ArrayList<>());
+            }
+            if (followed.getFollowers() == null) {
+                followed.setFollowers(new ArrayList<>());
+            }
+
+            // Check if already following
+            if (follower.getFollowing().contains(followedId)) {
+                return "User ID : " + followerId + " is already following User ID : " + followedId;
+            }
+
+            // Update the following list of the follower
+            follower.getFollowing().add(followedId);
+            // Update the followers list of the followed user
+            followed.getFollowers().add(followerId);
+
+            // Save both updated users to the database
+            userRepository.save(follower);
+            userRepository.save(followed);
+
+            return "User ID : " + followerId + " successfully followed User ID : " + followedId;
+        } catch (Exception e) {
+            return "Error following user: " + e.getMessage();
+        }
+    }
+
+    public String assignBadgeBasedOnPosts(String userId) {
+        try {
+            if (!userRepository.existsById(userId)) {
+                return "User ID : " + userId + " not found";
+            }
+
+            long postCount = postRepository.countByPublisherId(userId);
+            UserModel user = userRepository.findById(userId).get();
+            List<String> badges = user.getBadges() != null ? user.getBadges() : new ArrayList<>();
+
+            String newBadge = null;
+
+            // Check and assign the next milestone badge in order
+            if (postCount >= 1 && !badges.contains("New Contributor")) {
+                newBadge = "New Contributor";
+                badges.add(newBadge);
+            } else if (postCount >= 10 && !badges.contains("Contributor")) {
+                newBadge = "Contributor";
+                badges.add(newBadge);
+            } else if (postCount >= 25 && !badges.contains("Advanced Contributor")) {
+                newBadge = "Advanced Contributor";
+                badges.add(newBadge);
+            } else if (postCount >= 50 && !badges.contains("Pro Contributor")) {
+                newBadge = "Pro Contributor";
+                badges.add(newBadge);
+            } else if (postCount >= 100 && !badges.contains("Elite Contributor")) {
+                newBadge = "Elite Contributor";
+                badges.add(newBadge);
+            } else {
+                return "No new badge assigned";
+            }
+
+            user.setBadges(badges);
+            userRepository.save(user);
+
+            return "Badge \"" + newBadge + "\" assigned based on post count: " + postCount;
+        } catch (Exception e) {
+            return "Error assigning badge: " + e.getMessage();
         }
     }
 

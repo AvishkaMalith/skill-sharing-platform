@@ -1,172 +1,216 @@
-import NavBar from '../../src/components/NavBar';
-import Footer from '../../src/components/Footer';
-import profilePicture from "./profile-picture.jpg";
+import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const UserProfile = ({ user, posts }) => {
-  // Mock user data based on UserModel
-  const userData = user || {
-    userName: "jani200521",
-    fullName: "Janidhu Sampath",
-    userEmail: "janidu528@gmail.com",
-    bio: "Passionate learner and skill sharer. Love coding and Music !",
-    profilePictureUrl: profilePicture,
-    location: "Malabe, Sri Lanka",
-    badges: ["Top Contributor", "Skill Master"],
-    currentSkills: ["JavaScript", "React", "Python"],
-    socialLinks: {
-      twitter: "https://twitter.com/johndoe",
-      linkedin: "https://linkedin.com/in/johndoe"
-    },
-    followers: ["jane_smith", "bob_jones"],
-    following: ["alice_wonder", "charlie_brown"],
-    createdAt: "2025/01/01",
+const API_BASE_URL = 'http://localhost:8080/api/users';
+
+const UserProfile = () => {
+  const { state } = useLocation();
+  const userId = state?.userId;
+
+  const [userProfile, setUserProfile] = useState(null);
+  const [formData, setFormData] = useState({});
+  const [editMode, setEditMode] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (userId) {
+      const fetchUserProfile = async () => {
+        setIsFetching(true);
+        try {
+          const response = await axios.get(`http://localhost:8080/api/users/get/${userId}`);
+          setUserProfile(response.data);
+          setFormData(response.data);
+        } catch (err) {
+          setError(err.message || 'Failed to fetch user profile');
+        } finally {
+          setIsFetching(false);
+        }
+      };
+      fetchUserProfile();
+    }
+  }, [userId, isUpdating]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Mock posts data
-  const userPosts = posts || [
-    {
-      id: "1",
-      title: "Introduction to Guitar Chords",
-      content: "Learn the basics of chords to kick start your guitar playing journey",
-      likes: 25,
-      comments: 10,
-      createdAt: "2025-05-01",
-    },
-    {
-      id: "2",
-      title: "Python for Beginners",
-      content: "A comprehensive guide to getting started with Python programming.",
-      likes: 15,
-      comments: 5,
-      createdAt: "2025-05-04",
-    },
-  ];
+  const handleSocialLinkChange = (platform, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      socialLinks: {
+        ...prev.socialLinks,
+        [platform]: value,
+      },
+    }));
+  };
+
+  const handleSave = async () => {
+    setIsUpdating(true);
+    try {
+      const response = await axios.put(`http://localhost:8080/api/users/update`, {
+        ...formData,
+        updatedAt: new Date().toISOString(),
+      });
+      setUserProfile(response.data);
+      setEditMode(false);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch user profile');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  if (isFetching) {
+    return <div className="min-h-screen flex items-center justify-center">Loading profile...</div>;
+  }
+
+  if (!userProfile) {
+    return <div className="min-h-screen flex items-center justify-center">No user profile found.</div>;
+  }
 
   return (
-
-    <>
-    <NavBar />
-    <div className="min-h-screen bg-blue-200 p-2">
-      {/* Profile Section */}
+    <div className="min-h-screen bg-blue-200 p-4">
       <div className="bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-8 p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold text-gray-800">User Profile</h1>
+          <button
+            onClick={() => setEditMode((prev) => !prev)}
+            className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded"
+          >
+            {editMode ? 'Cancel' : 'Edit'}
+          </button>
+        </div>
+
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
         <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-          {/* Profile Picture */}
           <div className="flex-shrink-0">
             <img
-              src={userData.profilePictureUrl}
+              src={formData.profilePictureUrl || 'https://via.placeholder.com/128'}
               alt="Profile"
               className="w-32 h-32 rounded-full object-cover border-4 border-blue-200"
             />
           </div>
 
-          {/* Profile Details */}
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-2xl font-bold text-gray-800">{userData.fullName}</h1>
-            <p className="text-gray-600">@{userData.userName}</p>
-            <p className="text-gray-500 mt-1">{userData.location}</p>
-            <p className="text-gray-700 mt-2">{userData.bio}</p>
+            {editMode ? (
+              <>
+                <input
+                  name="fullName"
+                  value={formData.fullName || ''}
+                  onChange={handleChange}
+                  className="block w-full text-xl font-semibold text-gray-800 mb-1"
+                  placeholder="Full Name"
+                />
+                <input
+                  name="userName"
+                  value={formData.userName || ''}
+                  onChange={handleChange}
+                  className="block w-full text-gray-600 mb-1"
+                  placeholder="Username"
+                />
+                <input
+                  name="location"
+                  value={formData.location || ''}
+                  onChange={handleChange}
+                  className="block w-full text-gray-500 mb-1"
+                  placeholder="Location"
+                />
+                <textarea
+                  name="bio"
+                  value={formData.bio || ''}
+                  onChange={handleChange}
+                  className="block w-full text-gray-700 mt-2"
+                  placeholder="Bio"
+                />
+              </>
+            ) : (
+              <>
+                <h1 className="text-2xl font-bold text-gray-800">{userProfile.fullName}</h1>
+                <p className="text-gray-600">@{userProfile.userName}</p>
+                <p className="text-gray-500 mt-1">{userProfile.location}</p>
+                <p className="text-gray-700 mt-2">{userProfile.bio}</p>
+              </>
+            )}
 
-            {/* Social Links */}
             <div className="mt-4 flex gap-4 justify-center md:justify-start">
-              {userData.socialLinks.twitter && (
-                <a
-                  href={userData.socialLinks.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:text-blue-700"
-                >
-                  Twitter
-                </a>
-              )}
-              {userData.socialLinks.linkedin && (
-                <a
-                  href={userData.socialLinks.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:text-blue-700"
-                >
-                  LinkedIn
-                </a>
+              {editMode ? (
+                <>
+                  <input
+                    value={formData.socialLinks?.twitter || ''}
+                    onChange={(e) => handleSocialLinkChange('twitter', e.target.value)}
+                    className="text-sm px-2 py-1 border rounded"
+                    placeholder="Twitter URL"
+                  />
+                  <input
+                    value={formData.socialLinks?.linkedin || ''}
+                    onChange={(e) => handleSocialLinkChange('linkedin', e.target.value)}
+                    className="text-sm px-2 py-1 border rounded"
+                    placeholder="LinkedIn URL"
+                  />
+                </>
+              ) : (
+                <>
+                  {userProfile.socialLinks?.twitter && (
+                    <a
+                      href={userProfile.socialLinks.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:text-blue-700"
+                    >
+                      Twitter
+                    </a>
+                  )}
+                  {userProfile.socialLinks?.linkedin && (
+                    <a
+                      href={userProfile.socialLinks.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:text-blue-700"
+                    >
+                      LinkedIn
+                    </a>
+                  )}
+                </>
               )}
             </div>
 
-            {/* Stats */}
             <div className="mt-4 flex gap-6 justify-center md:justify-start">
               <div>
-                <span className="font-semibold text-gray-800">{userData.followers.length}</span>
+                <span className="font-semibold text-gray-800">{userProfile.followers?.length || 0}</span>
                 <span className="text-gray-600"> Followers</span>
               </div>
               <div>
-                <span className="font-semibold text-gray-800">{userData.following.length}</span>
+                <span className="font-semibold text-gray-800">{userProfile.following?.length || 0}</span>
                 <span className="text-gray-600"> Following</span>
               </div>
             </div>
           </div>
-
-          {/* Skills and Badges */}
-          <div className="flex flex-col gap-4 w-full md:w-1/3">
-            {/* Skills */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-800">Skills</h3>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {userData.currentSkills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Badges */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-800">Badges</h3>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {userData.badges.map((badge, index) => (
-                  <span
-                    key={index}
-                    className="bg-purple-300 text-blue-900 text-sm font-medium px-2.5 py-0.5 rounded"
-                  >
-                    {badge}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
 
-        {/* Joined Date */}
+        {editMode && (
+          <div className="mt-6 text-center">
+            <button
+              onClick={handleSave}
+              disabled={isUpdating}
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+            >
+              {isUpdating ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        )}
+
         <div className="mt-6 text-center md:text-left">
           <p className="text-gray-500 text-sm">
-            Joined {new Date(userData.createdAt).toLocaleDateString()}
+            Joined {new Date(userProfile.createdAt).toLocaleDateString()}
           </p>
         </div>
       </div>
-
-      {/* Posts Section */}
-      <div className="max-w-4xl mx-auto mt-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Published Posts</h2>
-        <div className="space-y-6">
-          {userPosts.map((post) => (
-            <div key={post.id} className="bg-white shadow-md rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-gray-800">{post.title}</h3>
-              <p className="text-gray-600 mt-2">{post.content}</p>
-              <div className="mt-4 flex gap-6 text-gray-500">
-                <span>{post.likes} Likes</span>
-                <span>{post.comments} Comments</span>
-              </div>
-              <p className="text-gray-400 text-sm mt-2">
-                Posted on {new Date(post.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
-    <Footer />
-    </>
   );
 };
 
