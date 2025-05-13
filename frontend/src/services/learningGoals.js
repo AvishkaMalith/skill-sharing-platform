@@ -9,6 +9,7 @@ const learningGoals = {
   create: (goal) => api.post(BASE, goal),
   update: (id, goal) => api.put(`${BASE}/${id}`, goal),
   delete: (id) => api.delete(`${BASE}/${id}`),
+  getByUserAndStatus: (userId, status) => api.get(`${BASE}/user/${userId}/status/${status}`),
 };
 
 export default learningGoals; 
