@@ -3,6 +3,8 @@ import Home from './pages/Home';
 import CreatePost from './pages/CreatePost';
 import ViewPost from './pages/ViewPost';
 import PostWall from './pages/PostWall';
+import ManagePost from './pages/ManagePost';
+import EditPost from './pages/EditPost';
 import LearningGoals from './pages/LearningGoals';
 import LearningGoalDetail from './pages/LearningGoalDetail';
 
@@ -15,6 +17,8 @@ const App = () => {
                 <Route path="/view-post/:postId" element={<ViewPost />} />
                 <Route path="/wall" element={<PostWall />} />
                 <Route path="/post/:postId" element={<ViewPost />} />
+                <Route path="/manage" element={<ManagePost />} />
+                <Route path="/edit/:postId" element={<EditPost />} />
                 <Route path="/learning-goals" element={<LearningGoals />} />
                 <Route path="/learning-goals/:id" element={<LearningGoalDetail />} />
             </Routes>
