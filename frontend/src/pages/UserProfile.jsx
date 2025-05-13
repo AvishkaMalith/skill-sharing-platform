@@ -134,6 +134,16 @@ const UserProfile = () => {
                 <p className="text-gray-600">@{userProfile.userName}</p>
                 <p className="text-gray-500 mt-1">{userProfile.location}</p>
                 <p className="text-gray-700 mt-2">{userProfile.bio}</p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {userProfile.badges.map((badge, index) => (
+                    <span
+                      key={index}
+                      className="inline-block bg-gray-200 text-gray-700 text-sm font-medium px-3 py-1 rounded-md border border-gray-300"
+                    >
+                      {badge}
+                    </span>
+                  ))}
+                </div>
               </>
             )}
 
