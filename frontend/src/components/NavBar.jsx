@@ -23,7 +23,7 @@ function Navbar({ isAuthenticated, setIsAuthenticated }) {
   const navLinks = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Learning Goals', href: '/learning-goals', icon: BookOpen },
-    { name: 'Community', href: '/community', icon: Users },
+    { name: 'Community', href: '/wall', icon: Users },
     { name: 'About', href: '/about', icon: Info },
     { name: 'Create Post', href: '/create-post', icon: PenSquare },
   ];
