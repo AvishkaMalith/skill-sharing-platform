@@ -26,6 +26,7 @@ function Navbar({ isAuthenticated, setIsAuthenticated }) {
     { name: 'Community', href: '/wall', icon: Users },
     { name: 'About', href: '/about', icon: Info },
     { name: 'Create Post', href: '/create-post', icon: PenSquare },
+    { name: 'Chat', href: '/chat', icon: Rocket },
   ];
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
