@@ -20,7 +20,7 @@ function LearningGoalCard({ goal, onDelete, onEdit }) {
       <div className="flex justify-between items-start mb-2">
         <div className="flex gap-2">
           <Badge color={goal.category}>{goal.category}</Badge>
-          <Badge color={goal.status}>{goal.status.replace('_', ' ')}</Badge>
+          <Badge color={goal.status === 'COMPLETED' ? 'COMPLETED' : 'IN_PROGRESS'}>{goal.status.replace('_', ' ')}</Badge>
         </div>
         <div className="flex gap-2">
           {onEdit && (
