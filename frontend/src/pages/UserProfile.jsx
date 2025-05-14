@@ -98,11 +98,17 @@ const UserProfile = () => {
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold text-gray-800">User Profile</h1>
           <div className="flex space-x-2">
+            {editMode ? null : <button
+              onClick={() => navigate('/manage')}
+              className="text-white bg-purple-500 hover:bg-purple-600 px-4 py-2 rounded"
+            >
+              View My Posts
+            </button>}
             <button
               onClick={() => setEditMode((prev) => !prev)}
               className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded"
             >
-              {editMode ? 'Cancel' : 'Edit'}
+              {editMode ? 'Cancel' : 'Edit Profile Details'}
             </button>
             <button
               onClick={handleDelete}

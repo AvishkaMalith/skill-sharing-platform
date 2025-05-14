@@ -15,7 +15,7 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       try {
         // Check auth status first
-        const authResponse = await auth.getStatus();
+        const authResponse = await auth.getStatus(); 
         if (!authResponse.data.isAuthenticated) {
           navigate('/login');
           return;
