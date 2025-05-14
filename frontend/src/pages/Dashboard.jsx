@@ -138,8 +138,9 @@ const Dashboard = () => {
             </div>
             <div className="flex items-center space-x-4">
               {user?.profilePictureUrl && (
-                <img 
-                  src={user.profilePictureUrl} 
+                <img
+                  onClick={() => navigate('/user-profile', { state: { userId: Cookies.get("userId") } })}
+                  src={user.profilePictureUrl}
                   alt="Profile" 
                   className="h-12 w-12 rounded-full object-cover"
                 />

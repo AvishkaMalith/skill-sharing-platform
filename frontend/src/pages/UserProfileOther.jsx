@@ -56,7 +56,7 @@ const OtherUserProfile = () => {
     };
 
     fetchPublisherPosts();
-  }, [publisherId]);
+  }, []);
 
   // Follow/unfollow user
   const handleFollowToggle = async () => {
