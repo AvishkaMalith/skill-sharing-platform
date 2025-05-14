@@ -1,5 +1,6 @@
 import Hero from "../components/Hero";
 import PlatformStatus from "../components/PlatformStatus";
+import SkillCategories from "../components/SkillCategories";
 import Footer from "../components/Footer";
 
 const Home = () => {
@@ -8,6 +9,7 @@ const Home = () => {
     <>
       <Hero />
       <PlatformStatus />
+      <SkillCategories />
       <Footer />
     </>
   );

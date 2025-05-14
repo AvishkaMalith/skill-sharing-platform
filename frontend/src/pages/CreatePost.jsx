@@ -3,6 +3,7 @@ import JoditEditor from 'jodit-react';
 import usePostStore from '../stores/postStore';
 import Footer from '../components/Footer';
 import Cookies from 'js-cookie';
+import axios from 'axios';
 
 const CreatePost = () => {
     const {
@@ -78,6 +79,12 @@ const CreatePost = () => {
         videos.forEach((file) => formData.append('videoFiles', file));
 
         await createPost(formData);
+
+        // Assigning a badge for the user on the number of posts created
+        const response = await axios.post(`http://localhost:8080/api/users/assign-badge/${Cookies.get('userId')}`);
+        
+        // Check if the badge was assigned successfully
+        console.log(response.data);
     };
 
     // Handle file uploads
@@ -144,8 +151,8 @@ const CreatePost = () => {
                             <JoditEditor
                                 value={content}
                                 config={config}
-                                onBlur={(newContent) => setContent(newContent)}
-                                onChange={() => {}}
+                                onBlur={(newContent) => setContent(newContent)} // Update content on blur for better performance
+                                onChange={() => { }} // Empty onChange to prevent unnecessary re-renders
                             />
                         </div>
 
@@ -182,9 +189,8 @@ const CreatePost = () => {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className={`w-full px-6 py-3 text-white rounded-md shadow transition ${
-                                    isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-                                }`}
+                                className={`w-full px-6 py-3 text-white rounded-md shadow transition ${isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                                    }`}
                             >
                                 {isLoading ? 'Creating...' : 'Create Post'}
                             </button>

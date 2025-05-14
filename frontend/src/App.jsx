@@ -14,6 +14,8 @@ import EditPost from './pages/EditPost';
 import LearningGoals from './pages/LearningGoals';
 import LearningGoalDetail from './pages/LearningGoalDetail';
 import Chat from './pages/Chat';
+import UserProfile from "./pages/UserProfile";
+import UserProfileOther from "./pages/UserProfileOther";
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -123,6 +125,22 @@ function App() {
                     element={
                         <ProtectedRoute isAuthenticated={isAuthenticated}>
                             <Chat />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/user-profile"
+                    element={
+                        <ProtectedRoute isAuthenticated={isAuthenticated}>
+                            <UserProfile />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/other-user-profile"
+                    element={
+                        <ProtectedRoute isAuthenticated={isAuthenticated}>
+                            <UserProfileOther />
                         </ProtectedRoute>
                     }
                 />

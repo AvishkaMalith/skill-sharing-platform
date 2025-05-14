@@ -64,7 +64,7 @@ const UserProfile = ({ userData, onSave }) => {
                 name="fullName"
                 value={formData.fullName || ""}
                 onChange={handleChange}
-                className="bg-transparent border-b-2 border-gray-300 w-full text-3xl font-bold text-gray-800 focus:outline-none focus:border-blue-500 py-2 text-center md:text-left"
+                className="bg-transparent border-b-2 border-gray-300 w-full text-3xl font-bold text-gray-800 focus:outline-none focus:border-blue-500 py-2"
                 placeholder="Full Name"
               />
             ) : (
@@ -74,14 +74,11 @@ const UserProfile = ({ userData, onSave }) => {
             )}
             <p className="text-lg text-gray-600 mt-1">@{formData.userName}</p>
             <p className="text-gray-600 mt-1">
-              <span className="font-semibold">Location:</span>{" "}
-              {formData.location || "Not specified"}
+              <span className="font-semibold">Location:</span> {formData.location || "Not specified"}
             </p>
             <p className="text-gray-600 mt-1">
               <span className="font-semibold">Joined:</span>{" "}
-              {formData.createdAt
-                ? new Date(formData.createdAt).toLocaleDateString()
-                : "-"}
+              {formData.createdAt ? new Date(formData.createdAt).toLocaleDateString() : "-"}
             </p>
           </div>
         </div>
@@ -91,9 +88,7 @@ const UserProfile = ({ userData, onSave }) => {
           <button
             onClick={() => (editMode ? handleSaveClick() : setEditMode(true))}
             className={`px-6 py-2 rounded-lg text-white font-medium transition-colors ${
-              editMode
-                ? "bg-green-600 hover:bg-green-700"
-                : "bg-blue-600 hover:bg-blue-700"
+              editMode ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
             {editMode ? "Save" : "Edit"}
@@ -115,9 +110,7 @@ const UserProfile = ({ userData, onSave }) => {
                 rows="4"
               />
             ) : (
-              <p className="text-gray-700">
-                {formData.bio || "No bio provided."}
-              </p>
+              <p className="text-gray-700">{formData.bio || "No bio provided."}</p>
             )}
           </div>
 
@@ -138,79 +131,64 @@ const UserProfile = ({ userData, onSave }) => {
             )}
           </div>
 
-          {/* Skills */}
+          {/* Skills (comma-separated input) */}
           <div>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Skills</h2>
             {editMode ? (
               <input
                 type="text"
                 name="currentSkills"
-                value={formData.currentSkills?.join(", ") || ""}
+                value={(formData.currentSkills || []).join(", ")}
                 onChange={(e) => handleListChange("currentSkills", e.target.value)}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Skill1, Skill2, Skill3"
+                placeholder="e.g. Java, React, MongoDB"
               />
-            ) : (
+            ) : formData.currentSkills?.length > 0 ? (
               <div className="flex flex-wrap gap-2">
-                {formData.currentSkills?.length > 0 ? (
-                  formData.currentSkills.map((skill, idx) => (
-                    <span
-                      key={idx}
-                      className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full"
-                    >
-                      {skill}
-                    </span>
-                  ))
-                ) : (
-                  <p className="text-gray-600">No skills listed.</p>
-                )}
+                {formData.currentSkills.map((skill, idx) => (
+                  <span
+                    key={idx}
+                    className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full"
+                  >
+                    {skill}
+                  </span>
+                ))}
               </div>
+            ) : (
+              <p className="text-gray-600">No skills listed.</p>
             )}
           </div>
 
           {/* Social Links */}
           <div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">
-              Social Links
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Social Links</h2>
             {editMode ? (
-              <div className="space-y-2">
-                {["twitter", "linkedin", "github"].map((platform) => (
-                  <input
+              ["twitter", "linkedin", "github"].map((platform) => (
+                <input
+                  key={platform}
+                  type="text"
+                  value={formData.socialLinks?.[platform] || ""}
+                  onChange={(e) => handleMapChange("socialLinks", platform, e.target.value)}
+                  className="w-full p-3 mb-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder={`${platform} URL`}
+                />
+              ))
+            ) : formData.socialLinks && Object.keys(formData.socialLinks).length > 0 ? (
+              <div className="flex flex-wrap gap-4">
+                {Object.entries(formData.socialLinks).map(([platform, link]) => (
+                  <a
                     key={platform}
-                    type="text"
-                    name="socialLinks"
-                    value={formData.socialLinks?.[platform] || ""}
-                    onChange={(e) =>
-                      handleMapChange("socialLinks", platform, e.target.value)
-                    }
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder={`${platform} URL`}
-                  />
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                  </a>
                 ))}
               </div>
             ) : (
-              <div className="flex gap-4">
-                {formData.socialLinks &&
-                Object.entries(formData.socialLinks).length > 0 ? (
-                  Object.entries(formData.socialLinks).map(
-                    ([platform, link]) =>
-                      link && (
-                        <a
-                          key={platform}
-                          href={link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800"
-                        >
-                          {platform.charAt(0).toUpperCase() + platform.slice(1)}
-                        </a>
-                      )
-                  )
-                ) : (
-                  <p className="text-gray-600">No social links provided.</p>
-                )}
-              </div>
+              <p className="text-gray-600">No social links provided.</p>
             )}
           </div>
 
@@ -218,13 +196,13 @@ const UserProfile = ({ userData, onSave }) => {
           <div>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Badges</h2>
             <div className="flex flex-wrap gap-4">
-              {formData.badges && Object.entries(formData.badges).length > 0 ? (
-                Object.entries(formData.badges).map(([name, year], idx) => (
+              {formData.badges?.length > 0 ? (
+                formData.badges.map((badge, idx) => (
                   <div
                     key={idx}
                     className="bg-yellow-100 text-yellow-800 text-sm font-medium px-3 py-1 rounded-full"
                   >
-                    {name} ({year})
+                    {badge}
                   </div>
                 ))
               ) : (
@@ -238,12 +216,10 @@ const UserProfile = ({ userData, onSave }) => {
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Stats</h2>
             <div className="flex gap-6">
               <p className="text-gray-700">
-                <span className="font-semibold">Followers:</span>{" "}
-                {formData.followers?.length || 0}
+                <span className="font-semibold">Followers:</span> {formData.followers?.length || 0}
               </p>
               <p className="text-gray-700">
-                <span className="font-semibold">Following:</span>{" "}
-                {formData.following?.length || 0}
+                <span className="font-semibold">Following:</span> {formData.following?.length || 0}
               </p>
             </div>
           </div>
@@ -258,7 +234,7 @@ const UserProfile = ({ userData, onSave }) => {
                 value={formData.roles?.join(", ") || ""}
                 onChange={(e) => handleListChange("roles", e.target.value)}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Mentor, Learner"
+                placeholder="e.g. Mentor, Learner"
               />
             ) : (
               <div className="flex gap-2">
@@ -280,37 +256,23 @@ const UserProfile = ({ userData, onSave }) => {
 
           {/* Account Status */}
           <div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">
-              Account Status
-            </h2>
-            <p
-              className={
-                formData.enabled
-                  ? "text-green-600 font-medium"
-                  : "text-red-600 font-medium"
-              }
-            >
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Account Status</h2>
+            <p className={formData.enabled ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
               {formData.enabled ? "Enabled" : "Disabled"}
             </p>
           </div>
 
-          {/* Created At / Updated At */}
+          {/* Account Dates */}
           <div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">
-              Account Dates
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Account Dates</h2>
             <div className="flex gap-6">
               <p className="text-gray-700">
                 <span className="font-semibold">Created:</span>{" "}
-                {formData.createdAt
-                  ? new Date(formData.createdAt).toLocaleDateString()
-                  : "-"}
+                {formData.createdAt ? new Date(formData.createdAt).toLocaleDateString() : "-"}
               </p>
               <p className="text-gray-700">
                 <span className="font-semibold">Updated:</span>{" "}
-                {formData.updatedAt
-                  ? new Date(formData.updatedAt).toLocaleDateString()
-                  : "-"}
+                {formData.updatedAt ? new Date(formData.updatedAt).toLocaleDateString() : "-"}
               </p>
             </div>
           </div>
