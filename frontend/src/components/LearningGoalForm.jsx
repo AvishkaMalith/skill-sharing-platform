@@ -12,6 +12,13 @@ function LearningGoalForm({ onSubmit, onClose, initialData = null }) {
       milestones: [{ title: '', description: '', completed: false }],
     }
   );
+  const [error, setError] = useState('');
+
+  // Helper to get today's date in yyyy-mm-dd format
+  const getToday = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,6 +58,15 @@ function LearningGoalForm({ onSubmit, onClose, initialData = null }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setError('');
+    // Validate target date is today or in the future
+    const selectedDate = new Date(formData.targetDate);
+    const now = new Date();
+    now.setHours(0,0,0,0); // ignore time
+    if (!formData.targetDate || selectedDate < now) {
+      setError('Target date cannot be in the past.');
+      return;
+    }
     // Prepare milestones: remove empty, ensure all fields
     const milestones = (formData.milestones || [])
       .filter(m => m.title && m.title.trim() !== '')
@@ -120,14 +136,22 @@ function LearningGoalForm({ onSubmit, onClose, initialData = null }) {
             <label className="block text-sm font-medium text-gray-700">
               Category
             </label>
-            <input
-              type="text"
+            <select
               name="category"
               value={formData.category}
               onChange={handleChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               required
-            />
+            >
+              <option value="" disabled>Select a category</option>
+              <option value="Programming">Programming</option>
+              <option value="Computing">Web Development</option>
+              <option value="Design">Design</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Business">Business</option>
+              <option value="Other">Other</option>
+              
+            </select>
           </div>
 
           <div>
@@ -141,7 +165,11 @@ function LearningGoalForm({ onSubmit, onClose, initialData = null }) {
               onChange={handleChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               required
+              min={getToday()}
             />
+            {error && (
+              <div className="text-red-500 text-sm mt-1">{error}</div>
+            )}
           </div>
 
           <div>
