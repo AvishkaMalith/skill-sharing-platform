@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import Footer from '../components/Footer';
 
@@ -20,6 +20,8 @@ const PostWall = () => {
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const postsPerPage = 20;
+
+    const navigate = useNavigate();
 
     // Fetch posts when currentPage changes
     useEffect(() => {
@@ -99,16 +101,16 @@ const PostWall = () => {
                             >
                                 <div className="p-6">
                                     <div className="flex justify-between items-center mb-4">
-                    <span className="text-sm font-semibold text-blue-600 bg-blue-100 px-2 py-1 rounded">
-                      {post.postCategory}
-                    </span>
+                                        <span className="text-sm font-semibold text-blue-600 bg-blue-100 px-2 py-1 rounded">
+                                            {post.postCategory}
+                                        </span>
                                         <span className="text-sm text-gray-500">
-                      {new Date(post.postTime).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                      })}
-                    </span>
+                                            {new Date(post.postTime).toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric',
+                                            })}
+                                        </span>
                                     </div>
                                     <h2 className="text-xl font-semibold text-gray-900 mb-2">
                                         {post.postTitle}
@@ -131,9 +133,11 @@ const PostWall = () => {
                                         />
                                     )}
                                     <div className="flex items-center">
-                    <span className="text-sm text-gray-700">
-                      By {post.publisherName}
-                    </span>
+                                        <button
+                                            onClick={() => navigate("/other-user-profile", { state: { userId: post.publisherId } }) }
+                                            className="text-sm text-gray-700">
+                                            By {post.publisherName}
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -146,11 +150,10 @@ const PostWall = () => {
                             <button
                                 onClick={() => paginate(currentPage - 1)}
                                 disabled={currentPage === 1}
-                                className={`px-4 py-2 rounded-md ${
-                                    currentPage === 1
-                                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                                        : 'bg-blue-600 text-white hover:bg-blue-700'
-                                }`}
+                                className={`px-4 py-2 rounded-md ${currentPage === 1
+                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                                    }`}
                             >
                                 Previous
                             </button>
@@ -159,11 +162,10 @@ const PostWall = () => {
                                     <button
                                         key={page}
                                         onClick={() => paginate(page)}
-                                        className={`px-4 py-2 rounded-md ${
-                                            currentPage === page
-                                                ? 'bg-blue-600 text-white'
-                                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                        }`}
+                                        className={`px-4 py-2 rounded-md ${currentPage === page
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                            }`}
                                     >
                                         {page}
                                     </button>
@@ -172,11 +174,10 @@ const PostWall = () => {
                             <button
                                 onClick={() => paginate(currentPage + 1)}
                                 disabled={currentPage === totalPages}
-                                className={`px-4 py-2 rounded-md ${
-                                    currentPage === totalPages
-                                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                                        : 'bg-blue-600 text-white hover:bg-blue-700'
-                                }`}
+                                className={`px-4 py-2 rounded-md ${currentPage === totalPages
+                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                                    }`}
                             >
                                 Next
                             </button>

@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.skill_share_platform.DataTransferObject.UserDataTransferObject;
 import com.skill_share_platform.Model.UserModel;
-import com.skill_share_platform.Repository.UserRepository;
 import com.skill_share_platform.Repository.PostRepository;
+import com.skill_share_platform.Repository.UserRepository;
 
 @Service
 public class UserService {
@@ -182,6 +182,50 @@ public class UserService {
         }
     }
 
+    // Method to unfollow a user
+    public String unfollowUser(String followerId, String followedId) {
+        try {
+            // Check if both users exist
+            if (!userRepository.existsById(followerId)) {
+                return "Follower ID : " + followerId + " not found";
+            }
+            if (!userRepository.existsById(followedId)) {
+                return "Followed ID : " + followedId + " not found";
+            }
+
+            // Prevent self-unfollow
+            if (followerId.equals(followedId)) {
+                return "Cannot unfollow yourself";
+            }
+
+            // Get the follower and followed user objects
+            UserModel follower = userRepository.findById(followerId).get();
+            UserModel followed = userRepository.findById(followedId).get();
+
+            // Check if following list or followers list is null or doesn't contain the ID
+            if (follower.getFollowing() == null || !follower.getFollowing().contains(followedId)) {
+                return "User ID : " + followerId + " is not following User ID : " + followedId;
+            }
+
+            // Remove followedId from follower's following list
+            follower.getFollowing().remove(followedId);
+
+            // Remove followerId from followed's followers list
+            if (followed.getFollowers() != null) {
+                followed.getFollowers().remove(followerId);
+            }
+
+            // Save both updated users to the database
+            userRepository.save(follower);
+            userRepository.save(followed);
+
+            return "User ID : " + followerId + " successfully unfollowed User ID : " + followedId;
+        } catch (Exception e) {
+            return "Error unfollowing user: " + e.getMessage();
+        }
+    }
+
+    // Method to assign badges based on post count
     public String assignBadgeBasedOnPosts(String userId) {
         try {
             if (!userRepository.existsById(userId)) {

@@ -151,13 +151,8 @@ const CreatePost = () => {
                             <JoditEditor
                                 value={content}
                                 config={config}
-<<<<<<< Updated upstream
-                                onBlur={(newContent) => setContent(newContent)}
-                                onChange={() => {}}
-=======
                                 onBlur={(newContent) => setContent(newContent)} // Update content on blur for better performance
                                 onChange={() => { }} // Empty onChange to prevent unnecessary re-renders
->>>>>>> Stashed changes
                             />
                         </div>
 
