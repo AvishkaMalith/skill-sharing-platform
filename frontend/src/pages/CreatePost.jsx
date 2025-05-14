@@ -4,6 +4,7 @@ import usePostStore from '../stores/postStore';
 import Footer from '../components/Footer';
 import Cookies from 'js-cookie';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const CreatePost = () => {
     const {
@@ -96,14 +97,44 @@ const CreatePost = () => {
         setVideos([...e.target.files]);
     };
 
+
+
+
+
+
     return (
+
+
         <>
+
+            <div className="mb-6">
+                <Link
+                    to="/manage"
+                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 mr-2"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                    >
+                        <path
+                            fillRule="evenodd"
+                            d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                            clipRule="evenodd"
+                        />
+                    </svg>
+                    Manage Posts
+                </Link>
+            </div>
 
             <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg">
                     <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
                         Create a New Post
                     </h2>
+
+
 
                     <form onSubmit={handleSubmit} className="space-y-6">
 
