@@ -46,8 +46,8 @@ const Login = ({ onLoginSuccess }) => {
   return (
     <div className={`login-container ${onLoginSuccess ? 'modal-login' : ''}`}>
       <div className="login-card">
-        <h1>Skill Sharing Platform</h1>
-        <p>Connect, learn, and share your skills with others</p>
+        <h1>Sign in here</h1>
+        <p>Access your account to connect, learn, and share your skills</p>
         {error && <div className="error-message">{error}</div>}
         <button
           className="google-login-button"
@@ -56,7 +56,7 @@ const Login = ({ onLoginSuccess }) => {
           title="Sign in with Google"
         >
           <img
-            src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+            src="https://developers.google.com/identity/images/g-logo.png"
             alt="Google logo"
             className="google-icon"
           />
@@ -69,8 +69,8 @@ const Login = ({ onLoginSuccess }) => {
           title="Sign in with Facebook"
         >
           <img
-            src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
-            alt="Google logo"
+            src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png"
+            alt="Facebook logo"
             className="google-icon"
           />
           Sign in with Facebook
