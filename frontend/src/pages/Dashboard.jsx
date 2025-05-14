@@ -204,12 +204,12 @@ const Dashboard = () => {
                           <p className="text-sm text-gray-500">{skill.level}</p>
                         </div>
                       </div>
-                      <span className={`text-xs font-semibold px-2 py-1 rounded-full ${skill.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>{skill.status.replace('_', ' ')}</span>
+                      <span className={text-xs font-semibold px-2 py-1 rounded-full ${skill.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}}>{skill.status.replace('_', ' ')}</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                       <div 
                         className="bg-blue-600 h-2 rounded-full" 
-                        style={{ width: `${skill.progress}%` }}
+                        style={{ width: ${skill.progress}% }}
                       ></div>
                     </div>
                     <p className="text-sm text-gray-600">Next: {skill.nextMilestone}</p>
@@ -304,4 +304,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;
